@@ -1,7 +1,8 @@
 ---
 PLAN: "feat: editorial — contenido con autoría, revisión y libro mayor de publicación"
-STATUS: running
+STATUS: review
 SESSION: 16533143424754545619
+PR: https://github.com/veltylabs/editorial/pull/1
 ---
 
 > Se despacha con el flujo CodeJob. Ver skill: agents-workflow.

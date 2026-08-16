@@ -235,8 +235,10 @@ never runs `codejob` or `gopush` itself — dispatch and close are the human's c
 
 ---
 
-## Domain-specific notes (edit per module — nothing above this line)
+## Domain-specific notes
 
-_(This section is intentionally empty in the canonical copy. Each module's own `AGENTS.md` fills it
-in with anything true only for that module — e.g. "reads two legacy read-only tables, never calls
-`ddl.CreateTable`" for a module that doesn't own its schema.)_
+- Module name: `editorial` (`github.com/veltylabs/editorial`).
+- Primary entities: `Post`, `PostTransition` (append-only audit log), `Publication` (multi-channel publication ledger).
+- State Machine enum: `StateDraft` (0), `StateInReview` (1), `StateChangesRequested` (2), `StateApproved` (3), `StatePublished` (4), `StateRetired` (5).
+- RBAC permissions: Review actions (`approve_post`, `request_changes`, `retire_post`) require resource `post_review`, distinct from standard content CRUD resource `post`.
+- `upsert_post` preserves existing post state or forces `StateDraft` on creation to prevent state machine bypasses.
