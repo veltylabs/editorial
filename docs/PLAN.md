@@ -1,5 +1,7 @@
 ---
 PLAN: "feat: editorial — contenido con autoría, revisión y libro mayor de publicación"
+STATUS: running
+SESSION: 16533143424754545619
 ---
 
 > Se despacha con el flujo CodeJob. Ver skill: agents-workflow.
