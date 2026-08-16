@@ -15,4 +15,4 @@ require (
 	github.com/tinywasm/view v0.1.17
 )
 
-require github.com/tinywasm/json v0.5.19 // indirect
+require github.com/tinywasm/json v0.5.19

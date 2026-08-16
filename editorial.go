@@ -296,7 +296,7 @@ func (m *Module) DeletePost(tenantId, id string) error {
 func (m *Module) ListPosts(args *ListPostsArgs) (PostList, error) {
 	qb := m.db.Query(&Post{}).
 		Where("tenant_id").Eq(args.TenantId)
-	if args.State != 0 {
+	if args.HasStateFilter {
 		qb = qb.Where("state").Eq(args.State)
 	}
 	if args.AuthorId != "" {

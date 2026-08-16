@@ -292,6 +292,57 @@ func TestMarkPublishedIdempotent(t *testing.T) {
 	}
 }
 
+func TestListPostsCanFilterForDraftState(t *testing.T) {
+	m, _ := setupModule(t)
+	tenant := "tenant-1"
+
+	draft, err := m.UpsertPost(tenant, &editorial.Post{
+		AuthorId: "author-1",
+		Slug:     "stays-draft",
+		Title:    "Stays Draft",
+		Body:     "Body content",
+	})
+	if err != nil {
+		t.Fatalf("UpsertPost failed: %v", err)
+	}
+
+	inReview, err := m.UpsertPost(tenant, &editorial.Post{
+		AuthorId: "author-1",
+		Slug:     "goes-to-review",
+		Title:    "Goes To Review",
+		Body:     "Body content",
+	})
+	if err != nil {
+		t.Fatalf("UpsertPost failed: %v", err)
+	}
+	if err := m.Submit(tenant, inReview.Id, "author-1"); err != nil {
+		t.Fatalf("Submit failed: %v", err)
+	}
+
+	// StateDraft is 0, the same zero value Go gives an unset State field —
+	// asking explicitly for drafts must not silently degrade into "no filter".
+	drafts, err := m.ListPosts(&editorial.ListPostsArgs{
+		TenantId:       tenant,
+		State:          int64(editorial.StateDraft),
+		HasStateFilter: true,
+	})
+	if err != nil {
+		t.Fatalf("ListPosts failed: %v", err)
+	}
+	if len(drafts) != 1 || drafts[0].Id != draft.Id {
+		t.Fatalf("expected exactly the 1 draft post (%s), got %d posts", draft.Id, len(drafts))
+	}
+
+	// HasStateFilter: false must still mean "no filter", regardless of State.
+	all, err := m.ListPosts(&editorial.ListPostsArgs{TenantId: tenant})
+	if err != nil {
+		t.Fatalf("ListPosts failed: %v", err)
+	}
+	if len(all) != 2 {
+		t.Fatalf("expected both posts with no filter, got %d", len(all))
+	}
+}
+
 func TestTenantIsolation(t *testing.T) {
 	m, _ := setupModule(t)
 	tenantA := "tenant-A"

@@ -311,6 +311,7 @@ func (m *Publication) SchemaExt() []model.FieldExt {
 type ListPostsArgs struct {
 	TenantId string
 	State int64
+	HasStateFilter bool
 	AuthorId string
 	Limit int64
 	Offset int64
@@ -320,13 +321,14 @@ func (m *ListPostsArgs) ModelName() string { return "ListPostsArgs" }
 
 func (m *ListPostsArgs) Schema() []model.Field { return ListPostsArgsModel.Fields }
 
-func (m *ListPostsArgs) Pointers() []any { return []any{&m.TenantId, &m.State, &m.AuthorId, &m.Limit, &m.Offset} }
+func (m *ListPostsArgs) Pointers() []any { return []any{&m.TenantId, &m.State, &m.HasStateFilter, &m.AuthorId, &m.Limit, &m.Offset} }
 
 func (m *ListPostsArgs) IsNil() bool { return m == nil }
 
 func (m *ListPostsArgs) EncodeFields(w model.FieldWriter) {
 	w.String("tenant_id", m.TenantId)
 	if m.State != 0 { w.Int("state", m.State) }
+	w.Bool("has_state_filter", m.HasStateFilter)
 	if m.AuthorId != "" { w.String("author_id", m.AuthorId) }
 	w.Int("limit", m.Limit)
 	w.Int("offset", m.Offset)
@@ -335,6 +337,7 @@ func (m *ListPostsArgs) EncodeFields(w model.FieldWriter) {
 func (m *ListPostsArgs) DecodeFields(r model.FieldReader) {
 	if v, ok := r.String("tenant_id"); ok { m.TenantId = v }
 	if v, ok := r.Int("state"); ok { m.State = v }
+	if v, ok := r.Bool("has_state_filter"); ok { m.HasStateFilter = v }
 	if v, ok := r.String("author_id"); ok { m.AuthorId = v }
 	if v, ok := r.Int("limit"); ok { m.Limit = v }
 	if v, ok := r.Int("offset"); ok { m.Offset = v }
@@ -594,3 +597,4 @@ func (s *ListTransitionsArgsList) DecodeFields(_ model.FieldReader) {}
 func (m *ListTransitionsArgs) Validate(action byte) error {
 	return model.ValidateFields(action, m)
 }
+

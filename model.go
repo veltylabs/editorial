@@ -56,6 +56,10 @@ var ListPostsArgsModel = model.Definition{
 	Fields: model.Fields{
 		{Name: "tenant_id", Type: model.Text(), NotNull: true},
 		{Name: "state", Type: model.Int(), OmitEmpty: true},
+		// has_state_filter distingue "sin filtro" de "filtrar por StateDraft":
+		// StateDraft es 0, el mismo zero value que "state no fue puesto", así
+		// que state != 0 nunca podría pedir explícitamente los borradores.
+		{Name: "has_state_filter", Type: model.Bool()},
 		{Name: "author_id", Type: model.Text(), OmitEmpty: true},
 		{Name: "limit", Type: model.Int()},
 		{Name: "offset", Type: model.Int()},
