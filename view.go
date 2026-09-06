@@ -7,6 +7,7 @@ import (
 )
 
 const titlePosts = "Posts"
+const searchPlaceholderPosts = "Search posts..."
 
 func (p *Post) Item() view.Item {
 	return view.Item{
@@ -39,5 +40,7 @@ func NewView(caller router.Caller) view.Presenter {
 	b := view.NewCallerLister(caller,
 		view.Ops{List: OpListPosts, Save: OpUpsertPost, Delete: OpDeletePost},
 		func() model.ModelSlice { return &PostList{} })
-	return view.New(b, &Post{}, view.WithTitle(titlePosts))
+	return view.New(b, &Post{},
+		view.WithTitle(titlePosts),
+		view.WithSearchPlaceholder(searchPlaceholderPosts))
 }

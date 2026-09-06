@@ -18,6 +18,10 @@ func TestViewPresenter(t *testing.T) {
 	if presenter.Title() != "Posts" {
 		t.Errorf("expected Title 'Posts', got '%s'", presenter.Title())
 	}
+
+	if presenter.SearchPlaceholder() != "Search posts..." {
+		t.Errorf("expected SearchPlaceholder 'Search posts...', got '%s'", presenter.SearchPlaceholder())
+	}
 }
 
 func TestItemizers(t *testing.T) {
