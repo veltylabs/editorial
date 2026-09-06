@@ -1,8 +1,8 @@
 package editorial
 
 import (
-	"github.com/tinywasm/model"
-	"github.com/tinywasm/router"
+	"webtyp.com/model"
+	"webtyp.com/router"
 )
 
 var _ router.OpModule = (*Module)(nil)

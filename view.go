@@ -1,9 +1,9 @@
 package editorial
 
 import (
-	"github.com/tinywasm/model"
-	"github.com/tinywasm/router"
-	"github.com/tinywasm/view"
+	"webtyp.com/model"
+	"webtyp.com/router"
+	"webtyp.com/view"
 )
 
 func (p *Post) Item() view.Item {

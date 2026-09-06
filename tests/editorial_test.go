@@ -4,10 +4,10 @@ import (
 	"testing"
 
 	"github.com/veltylabs/editorial"
-	"github.com/tinywasm/events"
-	"github.com/tinywasm/fmt"
-	"github.com/tinywasm/orm"
-	"github.com/tinywasm/storage/mem"
+	"webtyp.com/events"
+	"webtyp.com/fmt"
+	"webtyp.com/orm"
+	"webtyp.com/storage/mem"
 )
 
 type fakeIDGen struct {

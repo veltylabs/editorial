@@ -1,7 +1,7 @@
 package editorial
 
 import (
-	"github.com/tinywasm/fmt"
+	"webtyp.com/fmt"
 )
 
 type State uint8

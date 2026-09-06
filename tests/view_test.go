@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/veltylabs/editorial"
-	"github.com/tinywasm/router/mock"
+	"webtyp.com/router/mock"
 )
 
 func TestViewPresenter(t *testing.T) {

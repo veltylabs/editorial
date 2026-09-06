@@ -1,8 +1,8 @@
 package editorial
 
 import (
-	"github.com/tinywasm/input"
-	"github.com/tinywasm/model"
+	"webtyp.com/input"
+	"webtyp.com/model"
 )
 
 const ChannelWeb = "web"

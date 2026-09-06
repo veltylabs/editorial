@@ -70,8 +70,8 @@ package main
 
 import (
 	"github.com/veltylabs/editorial"
-	"github.com/tinywasm/orm"
-	"github.com/tinywasm/storage/sqlt"
+	"github.com/webtyp/orm"
+	"github.com/webtyp/storage/sqlt"
 )
 
 func main() {
