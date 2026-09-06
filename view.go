@@ -6,6 +6,9 @@ import (
 	"webtyp.com/view"
 )
 
+const titlePosts = "Posts"
+const searchPlaceholderPosts = "Search posts..."
+
 func (p *Post) Item() view.Item {
 	return view.Item{
 		ID:          p.Id,
@@ -30,15 +33,14 @@ func (t *PostTransition) Item() view.Item {
 	}
 }
 
+// NewView builds the posts Presenter — the tech-agnostic engine a renderer
+// (crudview, or any other) wraps. This module builds it (view + model + router
+// only); the app decides which renderer draws it.
 func NewView(caller router.Caller) view.Presenter {
-	return view.New(
-		caller,
-		&Post{},
-		OpListPosts,
-		func() model.ModelSlice { return &PostList{} },
-		view.WithTitle("Posts"),
-		view.WithSearchPlaceholder("Search posts..."),
-		view.WithSaveOp(OpUpsertPost),
-		view.WithDeleteOp(OpDeletePost),
-	)
+	b := view.NewCallerLister(caller,
+		view.Ops{List: OpListPosts, Save: OpUpsertPost, Delete: OpDeletePost},
+		func() model.ModelSlice { return &PostList{} })
+	return view.New(b, &Post{},
+		view.WithTitle(titlePosts),
+		view.WithSearchPlaceholder(searchPlaceholderPosts))
 }
