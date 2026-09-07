@@ -11,7 +11,7 @@ import (
 	"webtyp.com/storage/mem"
 )
 
-func TestMountOpsPermissions(t *testing.T) {
+func TestMountOperationsPermissions(t *testing.T) {
 	db := orm.New(mem.New())
 	deps := editorial.Deps{
 		IDs: &fakeIDGen{},
@@ -22,7 +22,7 @@ func TestMountOpsPermissions(t *testing.T) {
 	}
 
 	r := &mock.Router{}
-	m.MountOps(r)
+	m.MountOperations(r)
 
 	routes := r.Routes()
 	if len(routes) == 0 {
@@ -94,7 +94,7 @@ func TestOpsConsumerLifecycle(t *testing.T) {
 			return userID != ""
 		},
 	})
-	m.MountOps(r)
+	m.MountOperations(r)
 
 	tenant := "tenant-ops"
 	author := "author-ops"

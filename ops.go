@@ -5,7 +5,7 @@ import (
 	"webtyp.com/router"
 )
 
-var _ router.OpModule = (*Module)(nil)
+var _ router.OperationModule = (*Module)(nil)
 
 const (
 	ResourcePost        model.Resource = "post"
@@ -46,8 +46,8 @@ func mapErrorStatus(err error) int {
 	return 500
 }
 
-func (m *Module) MountOps(reg router.OpRegistry) {
-	reg.Op(OpListPosts, func(ctx router.Context) {
+func (m *Module) MountOperations(reg router.OperationRegistry) {
+	reg.Operation(OpListPosts, func(ctx router.Context) {
 		var args ListPostsArgs
 		if err := ctx.Decode(&args); err != nil {
 			ctx.WriteStatus(400)
@@ -65,7 +65,7 @@ func (m *Module) MountOps(reg router.OpRegistry) {
 		ctx.Encode(&list)
 	}).Requires(ResourcePost, model.Read).Accepts(&ListPostsArgs{})
 
-	reg.Op(OpGetPost, func(ctx router.Context) {
+	reg.Operation(OpGetPost, func(ctx router.Context) {
 		var args GetPostArgs
 		if err := ctx.Decode(&args); err != nil {
 			ctx.WriteStatus(400)
@@ -83,7 +83,7 @@ func (m *Module) MountOps(reg router.OpRegistry) {
 		ctx.Encode(post)
 	}).Requires(ResourcePost, model.Read).Accepts(&GetPostArgs{})
 
-	reg.Op(OpUpsertPost, func(ctx router.Context) {
+	reg.Operation(OpUpsertPost, func(ctx router.Context) {
 		var args Post
 		if err := ctx.Decode(&args); err != nil {
 			ctx.WriteStatus(400)
@@ -97,7 +97,7 @@ func (m *Module) MountOps(reg router.OpRegistry) {
 		ctx.Encode(post)
 	}).Requires(ResourcePost, model.Create|model.Update).Accepts(&Post{})
 
-	reg.Op(OpDeletePost, func(ctx router.Context) {
+	reg.Operation(OpDeletePost, func(ctx router.Context) {
 		var args DeletePostArgs
 		if err := ctx.Decode(&args); err != nil {
 			ctx.WriteStatus(400)
@@ -114,7 +114,7 @@ func (m *Module) MountOps(reg router.OpRegistry) {
 		ctx.WriteStatus(200)
 	}).Requires(ResourcePost, model.Delete).Accepts(&DeletePostArgs{})
 
-	reg.Op(OpSubmitPost, func(ctx router.Context) {
+	reg.Operation(OpSubmitPost, func(ctx router.Context) {
 		var args PostActionArgs
 		if err := ctx.Decode(&args); err != nil {
 			ctx.WriteStatus(400)
@@ -131,7 +131,7 @@ func (m *Module) MountOps(reg router.OpRegistry) {
 		ctx.WriteStatus(200)
 	}).Requires(ResourcePost, model.Update).Accepts(&PostActionArgs{})
 
-	reg.Op(OpApprovePost, func(ctx router.Context) {
+	reg.Operation(OpApprovePost, func(ctx router.Context) {
 		var args PostActionArgs
 		if err := ctx.Decode(&args); err != nil {
 			ctx.WriteStatus(400)
@@ -148,7 +148,7 @@ func (m *Module) MountOps(reg router.OpRegistry) {
 		ctx.WriteStatus(200)
 	}).Requires(ResourcePostReview, model.Update).Accepts(&PostActionArgs{})
 
-	reg.Op(OpRequestChanges, func(ctx router.Context) {
+	reg.Operation(OpRequestChanges, func(ctx router.Context) {
 		var args RequestChangesArgs
 		if err := ctx.Decode(&args); err != nil {
 			ctx.WriteStatus(400)
@@ -165,7 +165,7 @@ func (m *Module) MountOps(reg router.OpRegistry) {
 		ctx.WriteStatus(200)
 	}).Requires(ResourcePostReview, model.Update).Accepts(&RequestChangesArgs{})
 
-	reg.Op(OpRetirePost, func(ctx router.Context) {
+	reg.Operation(OpRetirePost, func(ctx router.Context) {
 		var args PostActionArgs
 		if err := ctx.Decode(&args); err != nil {
 			ctx.WriteStatus(400)
@@ -182,7 +182,7 @@ func (m *Module) MountOps(reg router.OpRegistry) {
 		ctx.WriteStatus(200)
 	}).Requires(ResourcePostReview, model.Update).Accepts(&PostActionArgs{})
 
-	reg.Op(OpListPublications, func(ctx router.Context) {
+	reg.Operation(OpListPublications, func(ctx router.Context) {
 		var args ListPublicationsArgs
 		if err := ctx.Decode(&args); err != nil {
 			ctx.WriteStatus(400)
@@ -200,7 +200,7 @@ func (m *Module) MountOps(reg router.OpRegistry) {
 		ctx.Encode(&pubs)
 	}).Requires(ResourcePublication, model.Read).Accepts(&ListPublicationsArgs{})
 
-	reg.Op(OpListTransitions, func(ctx router.Context) {
+	reg.Operation(OpListTransitions, func(ctx router.Context) {
 		var args ListTransitionsArgs
 		if err := ctx.Decode(&args); err != nil {
 			ctx.WriteStatus(400)
