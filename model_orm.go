@@ -62,8 +62,6 @@ func (m *Post) DecodeFields(r model.FieldReader) {
 
 type PostList []*Post
 
-func (s *PostList) Schema() []model.Field { return nil }
-func (s *PostList) Pointers() []any     { return nil }
 func (s *PostList) Len() int             { return len(*s) }
 func (s *PostList) At(i int) model.Fielder { return (*s)[i] }
 func (s *PostList) Append() model.Fielder  { v := &Post{}; *s = append(*s, v); return v }
@@ -163,8 +161,6 @@ func (m *PostTransition) DecodeFields(r model.FieldReader) {
 
 type PostTransitionList []*PostTransition
 
-func (s *PostTransitionList) Schema() []model.Field { return nil }
-func (s *PostTransitionList) Pointers() []any     { return nil }
 func (s *PostTransitionList) Len() int             { return len(*s) }
 func (s *PostTransitionList) At(i int) model.Fielder { return (*s)[i] }
 func (s *PostTransitionList) Append() model.Fielder  { v := &PostTransition{}; *s = append(*s, v); return v }
@@ -256,8 +252,6 @@ func (m *Publication) DecodeFields(r model.FieldReader) {
 
 type PublicationList []*Publication
 
-func (s *PublicationList) Schema() []model.Field { return nil }
-func (s *PublicationList) Pointers() []any     { return nil }
 func (s *PublicationList) Len() int             { return len(*s) }
 func (s *PublicationList) At(i int) model.Fielder { return (*s)[i] }
 func (s *PublicationList) Append() model.Fielder  { v := &Publication{}; *s = append(*s, v); return v }
@@ -345,8 +339,6 @@ func (m *ListPostsArgs) DecodeFields(r model.FieldReader) {
 
 type ListPostsArgsList []*ListPostsArgs
 
-func (s *ListPostsArgsList) Schema() []model.Field { return nil }
-func (s *ListPostsArgsList) Pointers() []any     { return nil }
 func (s *ListPostsArgsList) Len() int             { return len(*s) }
 func (s *ListPostsArgsList) At(i int) model.Fielder { return (*s)[i] }
 func (s *ListPostsArgsList) Append() model.Fielder  { v := &ListPostsArgs{}; *s = append(*s, v); return v }
@@ -383,8 +375,6 @@ func (m *GetPostArgs) DecodeFields(r model.FieldReader) {
 
 type GetPostArgsList []*GetPostArgs
 
-func (s *GetPostArgsList) Schema() []model.Field { return nil }
-func (s *GetPostArgsList) Pointers() []any     { return nil }
 func (s *GetPostArgsList) Len() int             { return len(*s) }
 func (s *GetPostArgsList) At(i int) model.Fielder { return (*s)[i] }
 func (s *GetPostArgsList) Append() model.Fielder  { v := &GetPostArgs{}; *s = append(*s, v); return v }
@@ -421,8 +411,6 @@ func (m *DeletePostArgs) DecodeFields(r model.FieldReader) {
 
 type DeletePostArgsList []*DeletePostArgs
 
-func (s *DeletePostArgsList) Schema() []model.Field { return nil }
-func (s *DeletePostArgsList) Pointers() []any     { return nil }
 func (s *DeletePostArgsList) Len() int             { return len(*s) }
 func (s *DeletePostArgsList) At(i int) model.Fielder { return (*s)[i] }
 func (s *DeletePostArgsList) Append() model.Fielder  { v := &DeletePostArgs{}; *s = append(*s, v); return v }
@@ -462,8 +450,6 @@ func (m *PostActionArgs) DecodeFields(r model.FieldReader) {
 
 type PostActionArgsList []*PostActionArgs
 
-func (s *PostActionArgsList) Schema() []model.Field { return nil }
-func (s *PostActionArgsList) Pointers() []any     { return nil }
 func (s *PostActionArgsList) Len() int             { return len(*s) }
 func (s *PostActionArgsList) At(i int) model.Fielder { return (*s)[i] }
 func (s *PostActionArgsList) Append() model.Fielder  { v := &PostActionArgs{}; *s = append(*s, v); return v }
@@ -506,8 +492,6 @@ func (m *RequestChangesArgs) DecodeFields(r model.FieldReader) {
 
 type RequestChangesArgsList []*RequestChangesArgs
 
-func (s *RequestChangesArgsList) Schema() []model.Field { return nil }
-func (s *RequestChangesArgsList) Pointers() []any     { return nil }
 func (s *RequestChangesArgsList) Len() int             { return len(*s) }
 func (s *RequestChangesArgsList) At(i int) model.Fielder { return (*s)[i] }
 func (s *RequestChangesArgsList) Append() model.Fielder  { v := &RequestChangesArgs{}; *s = append(*s, v); return v }
@@ -547,8 +531,6 @@ func (m *ListPublicationsArgs) DecodeFields(r model.FieldReader) {
 
 type ListPublicationsArgsList []*ListPublicationsArgs
 
-func (s *ListPublicationsArgsList) Schema() []model.Field { return nil }
-func (s *ListPublicationsArgsList) Pointers() []any     { return nil }
 func (s *ListPublicationsArgsList) Len() int             { return len(*s) }
 func (s *ListPublicationsArgsList) At(i int) model.Fielder { return (*s)[i] }
 func (s *ListPublicationsArgsList) Append() model.Fielder  { v := &ListPublicationsArgs{}; *s = append(*s, v); return v }
@@ -585,8 +567,6 @@ func (m *ListTransitionsArgs) DecodeFields(r model.FieldReader) {
 
 type ListTransitionsArgsList []*ListTransitionsArgs
 
-func (s *ListTransitionsArgsList) Schema() []model.Field { return nil }
-func (s *ListTransitionsArgsList) Pointers() []any     { return nil }
 func (s *ListTransitionsArgsList) Len() int             { return len(*s) }
 func (s *ListTransitionsArgsList) At(i int) model.Fielder { return (*s)[i] }
 func (s *ListTransitionsArgsList) Append() model.Fielder  { v := &ListTransitionsArgs{}; *s = append(*s, v); return v }
