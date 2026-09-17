@@ -38,7 +38,7 @@ func (t *PostTransition) Item() view.Item {
 // only); the app decides which renderer draws it.
 func NewView(caller router.Caller) view.Presenter {
 	b := view.NewCallerLister(caller,
-		view.Ops{List: OpListPosts, Save: OpUpsertPost, Delete: OpDeletePost},
+		view.Ops{Module: ModelName, List: OpListPosts, Save: OpUpsertPost, Delete: OpDeletePost},
 		func() model.ModelSlice { return &PostList{} })
 	return view.New(b, &Post{},
 		view.WithTitle(titlePosts),

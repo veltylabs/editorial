@@ -7,6 +7,12 @@ import (
 
 var _ router.OperationModule = (*Module)(nil)
 
+// ModelName is this module's identity: mcp.HarvestOps qualifies every op
+// below as "editorial.<name>" on the wire, and view.go's NewView passes this
+// same constant as view.Ops.Module so the client composes the identical
+// qualified name.
+const ModelName = "editorial"
+
 const (
 	ResourcePost        model.Resource = "post"
 	ResourcePostReview  model.Resource = "post_review"
@@ -27,7 +33,7 @@ const (
 )
 
 func (m *Module) ModelName() string {
-	return "editorial"
+	return ModelName
 }
 
 func mapErrorStatus(err error) int {
