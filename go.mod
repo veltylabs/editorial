@@ -15,4 +15,4 @@ require (
 	webtyp.com/view v0.6.2
 )
 
-require webtyp.com/json v0.5.25
+require webtyp.com/json v0.5.27
