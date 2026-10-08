@@ -40,14 +40,15 @@ func mapErrorStatus(err error) int {
 	if err == nil {
 		return 200
 	}
-	if err == ErrNotFound {
-		return 404
-	}
-	if err == ErrAlreadyExists {
-		return 409
-	}
-	if err == ErrInvalidTransition || err == ErrReasonRequired {
-		return 400
+	if e, ok := err.(domainError); ok {
+		switch e {
+		case ErrNotFound:
+			return 404
+		case ErrAlreadyExists:
+			return 409
+		case ErrInvalidTransition, ErrReasonRequired:
+			return 400
+		}
 	}
 	return 500
 }

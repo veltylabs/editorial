@@ -1,9 +1,5 @@
 package editorial
 
-import (
-	"webtyp.com/fmt"
-)
-
 type State uint8
 
 const (
@@ -34,7 +30,7 @@ func (s State) String() string {
 	}
 }
 
-var ErrInvalidTransition = fmt.Err("invalid state transition")
+const ErrInvalidTransition domainError = "invalid state transition"
 
 type transitionRule struct {
 	From State

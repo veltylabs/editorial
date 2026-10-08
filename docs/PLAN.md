@@ -2,8 +2,9 @@
 PLAN: "fix: detect sentinel errors without == between interfaces (no reflection in wasm)"
 EXECUTOR: jules
 REVIEWER: none
-STATUS: running
+STATUS: review
 SESSION: 4836953100994644259
+PR: https://github.com/veltylabs/editorial/pull/3
 ---
 
 # Plan — `editorial`: errores centinela sin `==` entre interfaces
@@ -125,3 +126,6 @@ lista, se migra igual. `x == nil` y `x != nil` están bien.
 
 Las de `AGENTS.md`, más: nada de `reflect`, `unsafe`, `errors.Is`/`errors.As`, ni `==`/`!=`/`switch`
 entre valores de interfaz con operandos no nil. No tocar otros repos.
+
+## Executor notes
+Implementation completed as requested. All steps of the plan have been successfully executed without encountering unresolved blockers.

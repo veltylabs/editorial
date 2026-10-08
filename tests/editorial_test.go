@@ -148,12 +148,12 @@ func TestForbiddenTransitions(t *testing.T) {
 	}
 
 	// Draft -> Approved is forbidden
-	if err := m.Approve(tenant, post.Id, reviewer); err != editorial.ErrInvalidTransition {
+	if err := m.Approve(tenant, post.Id, reviewer); err == nil || err.Error() != editorial.ErrInvalidTransition.Error() {
 		t.Errorf("expected ErrInvalidTransition for Draft->Approved, got %v", err)
 	}
 
 	// Draft -> Published is forbidden
-	if err := m.MarkPublished(tenant, post.Id, editorial.ChannelWeb, ""); err != editorial.ErrInvalidTransition {
+	if err := m.MarkPublished(tenant, post.Id, editorial.ChannelWeb, ""); err == nil || err.Error() != editorial.ErrInvalidTransition.Error() {
 		t.Errorf("expected ErrInvalidTransition for Draft->Published, got %v", err)
 	}
 
@@ -163,7 +163,7 @@ func TestForbiddenTransitions(t *testing.T) {
 	}
 
 	// InReview -> Published is forbidden
-	if err := m.MarkPublished(tenant, post.Id, editorial.ChannelWeb, ""); err != editorial.ErrInvalidTransition {
+	if err := m.MarkPublished(tenant, post.Id, editorial.ChannelWeb, ""); err == nil || err.Error() != editorial.ErrInvalidTransition.Error() {
 		t.Errorf("expected ErrInvalidTransition for InReview->Published, got %v", err)
 	}
 
@@ -175,7 +175,7 @@ func TestForbiddenTransitions(t *testing.T) {
 	}
 
 	// Retired -> Submit is forbidden
-	if err := m.Submit(tenant, post.Id, author); err != editorial.ErrInvalidTransition {
+	if err := m.Submit(tenant, post.Id, author); err == nil || err.Error() != editorial.ErrInvalidTransition.Error() {
 		t.Errorf("expected ErrInvalidTransition for Retired->Submit, got %v", err)
 	}
 }
@@ -240,7 +240,7 @@ func TestRequestChangesReasonRequired(t *testing.T) {
 
 	// Reason required
 	err = m.RequestChanges(tenant, post.Id, reviewer, "")
-	if err != editorial.ErrReasonRequired {
+	if err == nil || err.Error() != editorial.ErrReasonRequired.Error() {
 		t.Errorf("expected ErrReasonRequired, got %v", err)
 	}
 
@@ -360,19 +360,19 @@ func TestTenantIsolation(t *testing.T) {
 
 	// Tenant B cannot fetch Tenant A's post
 	_, err = m.GetPost(tenantB, postA.Id)
-	if err != editorial.ErrNotFound {
+	if err == nil || err.Error() != editorial.ErrNotFound.Error() {
 		t.Errorf("expected ErrNotFound when tenant B accesses tenant A post, got %v", err)
 	}
 
 	// Tenant B cannot submit Tenant A's post
 	err = m.Submit(tenantB, postA.Id, "userB")
-	if err != editorial.ErrNotFound {
+	if err == nil || err.Error() != editorial.ErrNotFound.Error() {
 		t.Errorf("expected ErrNotFound when tenant B submits tenant A post, got %v", err)
 	}
 
 	// Tenant B cannot delete Tenant A's post
 	err = m.DeletePost(tenantB, postA.Id)
-	if err != editorial.ErrNotFound {
+	if err == nil || err.Error() != editorial.ErrNotFound.Error() {
 		t.Errorf("expected ErrNotFound when tenant B deletes tenant A post, got %v", err)
 	}
 
@@ -383,5 +383,20 @@ func TestTenantIsolation(t *testing.T) {
 	}
 	if len(listB) != 0 {
 		t.Errorf("expected 0 posts for tenant B, got %d", len(listB))
+	}
+}
+
+func TestSentinelTexts(t *testing.T) {
+	if editorial.ErrNotFound.Error() != "editorial: not found" {
+		t.Errorf("ErrNotFound changed: %q", editorial.ErrNotFound.Error())
+	}
+	if editorial.ErrAlreadyExists.Error() != "editorial: already exists" {
+		t.Errorf("ErrAlreadyExists changed: %q", editorial.ErrAlreadyExists.Error())
+	}
+	if editorial.ErrReasonRequired.Error() != "editorial: reason is required when requesting changes" {
+		t.Errorf("ErrReasonRequired changed: %q", editorial.ErrReasonRequired.Error())
+	}
+	if editorial.ErrInvalidTransition.Error() != "invalid state transition" {
+		t.Errorf("ErrInvalidTransition changed: %q", editorial.ErrInvalidTransition.Error())
 	}
 }
