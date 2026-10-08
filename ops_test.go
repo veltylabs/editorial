@@ -1,3 +1,4 @@
+// Root test: mapErrorStatus and domainError are unexported; tests/ can only reach the public API.
 package editorial
 
 import "testing"
