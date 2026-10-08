@@ -10,7 +10,7 @@ require (
 	webtyp.com/model v0.2.2
 	webtyp.com/orm v0.12.1
 	webtyp.com/router v0.3.2
-	webtyp.com/storage v0.0.7
+	webtyp.com/storage v0.1.3
 	webtyp.com/time v0.5.7
 	webtyp.com/view v0.6.27
 )
