@@ -10,10 +10,18 @@ import (
 	"webtyp.com/time"
 )
 
-var (
-	ErrNotFound       = fmt.Err("editorial: not found")
-	ErrAlreadyExists  = fmt.Err("editorial: already exists")
-	ErrReasonRequired = fmt.Err("editorial: reason is required when requesting changes")
+// domainError is the concrete type of this package's sentinel errors. Code
+// compares them by asserting this type and comparing the value: == between two
+// error values compiles, under TinyGo, to runtime.interfaceEqual, which pulls
+// internal/reflectlite into the wasm binary.
+type domainError string
+
+func (e domainError) Error() string { return string(e) }
+
+const (
+	ErrNotFound       domainError = "editorial: not found"
+	ErrAlreadyExists  domainError = "editorial: already exists"
+	ErrReasonRequired domainError = "editorial: reason is required when requesting changes"
 )
 
 const (
@@ -86,7 +94,7 @@ func (m *Module) MarkPublished(tenantId, postId, channel, externalRef string) er
 			func() model.Model { return &Publication{} },
 			func(rec model.Model) { existingPubs = append(existingPubs, rec.(*Publication)) },
 		)
-	if err != nil && err != orm.ErrNotFound && err != storage.ErrNoRows {
+	if err != nil && !orm.IsNotFound(err) && !storage.IsNoRows(err) {
 		return err
 	}
 	if len(existingPubs) > 0 {
@@ -199,7 +207,7 @@ func (m *Module) GetPost(tenantId, id string) (*Post, error) {
 		Where("id").Eq(id).
 		ReadOne()
 	if err != nil {
-		if err == orm.ErrNotFound || err == storage.ErrNoRows {
+		if orm.IsNotFound(err) || storage.IsNoRows(err) {
 			return nil, ErrNotFound
 		}
 		return nil, err
@@ -237,8 +245,10 @@ func (m *Module) UpsertPost(tenantId string, input *Post) (*Post, error) {
 	if input.Id != "" {
 		var err error
 		existing, err = m.GetPost(tenantId, input.Id)
-		if err != nil && err != ErrNotFound {
-			return nil, err
+		if err != nil {
+			if e, ok := err.(domainError); !ok || e != ErrNotFound {
+				return nil, err
+			}
 		}
 	}
 
@@ -285,7 +295,7 @@ func (m *Module) DeletePost(tenantId, id string) error {
 	}
 	err = m.db.Delete(&Post{}, orm.Eq("tenant_id", tenantId), orm.Eq("id", id))
 	if err != nil {
-		if err == orm.ErrNotFound || err == storage.ErrNoRows {
+		if orm.IsNotFound(err) || storage.IsNoRows(err) {
 			return ErrNotFound
 		}
 		return err
@@ -314,7 +324,7 @@ func (m *Module) ListPosts(args *ListPostsArgs) (PostList, error) {
 		func() model.Model { return &Post{} },
 		func(rec model.Model) { list = append(list, rec.(*Post)) },
 	)
-	if err != nil && err != orm.ErrNotFound && err != storage.ErrNoRows {
+	if err != nil && !orm.IsNotFound(err) && !storage.IsNoRows(err) {
 		return nil, err
 	}
 	return list, nil
@@ -330,7 +340,7 @@ func (m *Module) ListTransitions(args *ListTransitionsArgs) (PostTransitionList,
 		func() model.Model { return &PostTransition{} },
 		func(rec model.Model) { list = append(list, rec.(*PostTransition)) },
 	)
-	if err != nil && err != orm.ErrNotFound && err != storage.ErrNoRows {
+	if err != nil && !orm.IsNotFound(err) && !storage.IsNoRows(err) {
 		return nil, err
 	}
 	return list, nil
@@ -351,7 +361,7 @@ func (m *Module) ListPublications(args *ListPublicationsArgs) (PublicationList, 
 		func() model.Model { return &Publication{} },
 		func(rec model.Model) { list = append(list, rec.(*Publication)) },
 	)
-	if err != nil && err != orm.ErrNotFound && err != storage.ErrNoRows {
+	if err != nil && !orm.IsNotFound(err) && !storage.IsNoRows(err) {
 		return nil, err
 	}
 	return list, nil
