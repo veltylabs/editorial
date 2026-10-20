@@ -19,9 +19,9 @@ var PostModel = model.Definition{
 		{Name: "body", Type: input.Textarea(), NotNull: true, DB: &model.FieldDB{}},
 		{Name: "cover_image", Type: input.Text(), Permitted: model.Permitted{Letters: true, Numbers: true, Extra: []rune{'/', '.', '-', '_'}}, DB: &model.FieldDB{}},
 		{Name: "state", Type: model.Int(), DB: &model.FieldDB{}},
-		{Name: "published_at", Type: model.Int(), OmitEmpty: true, DB: &model.FieldDB{}},
-		{Name: "created_at", Type: model.Int(), DB: &model.FieldDB{}},
-		{Name: "updated_at", Type: model.Int(), DB: &model.FieldDB{}},
+		{Name: "published_at", Type: model.NanoTime(), OmitEmpty: true, DB: &model.FieldDB{}},
+		{Name: "created_at", Type: model.NanoTime(), DB: &model.FieldDB{}},
+		{Name: "updated_at", Type: model.NanoTime(), DB: &model.FieldDB{}},
 	},
 }
 
@@ -35,7 +35,7 @@ var PostTransitionModel = model.Definition{
 		{Name: "to_state", Type: model.Int(), DB: &model.FieldDB{}},
 		{Name: "actor_id", Type: model.Text(), NotNull: true, DB: &model.FieldDB{}},
 		{Name: "reason", Type: input.Textarea(), OmitEmpty: true, DB: &model.FieldDB{}},
-		{Name: "at", Type: model.Int(), NotNull: true, DB: &model.FieldDB{}},
+		{Name: "at", Type: model.NanoTime(), NotNull: true, DB: &model.FieldDB{}},
 	},
 }
 
@@ -47,7 +47,7 @@ var PublicationModel = model.Definition{
 		{Name: "post_id", Type: model.Text(), NotNull: true, Ref: &PostModel, DB: &model.FieldDB{RefColumn: "id"}},
 		{Name: "channel", Type: model.Text(), NotNull: true, DB: &model.FieldDB{}},
 		{Name: "external_ref", Type: model.Text(), OmitEmpty: true, DB: &model.FieldDB{}},
-		{Name: "published_at", Type: model.Int(), NotNull: true, DB: &model.FieldDB{}},
+		{Name: "published_at", Type: model.NanoTime(), NotNull: true, DB: &model.FieldDB{}},
 	},
 }
 

@@ -107,7 +107,7 @@ func (m *Module) MarkPublished(tenantId, postId, channel, externalRef string) er
 	}
 
 	currentState := State(post.State)
-	now := time.Now()
+	now := time.NowNano()
 
 	if currentState == StateApproved {
 		if err := m.transitionPost(tenantId, postId, "system", StatePublished, ""); err != nil {
@@ -158,7 +158,7 @@ func (m *Module) transitionPost(tenantId, postId, actorId string, targetState St
 		return ErrInvalidTransition
 	}
 
-	now := time.Now()
+	now := time.NowNano()
 	transId := m.deps.IDs.NewID()
 	trans := &PostTransition{
 		Id:        transId,
@@ -221,7 +221,7 @@ func (m *Module) UpsertPost(tenantId string, input *Post) (*Post, error) {
 	}
 	input.TenantId = tenantId
 
-	now := time.Now()
+	now := time.NowNano()
 
 	if input.Slug != "" {
 		var matches PostList
