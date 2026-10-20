@@ -2,8 +2,10 @@
 PLAN: "refactor: typed instants of webtyp/time v0.6 in editorial — every instant field is time.Unix or time.Nano, no unit arithmetic"
 EXECUTOR: jules
 REVIEWER: none
-STATUS: running
+STATUS: review
 SESSION: 8474652431902609184
+PR: https://github.com/veltylabs/editorial/pull/4
+REVIEWED_COMMIT: 8cec53c1a58b7d727bad11317f6e36a59d6d66ea
 ---
 
 > Read AGENTS.md at the repo root before any change. This plan is complete: do not guess; if something does not fit, stop and ask in the PR.
@@ -152,3 +154,5 @@ git diff --stat main --diff-filter=D                            # → empty: not
 | 2 | generated | `model_orm.go` |
 | 3 | uses | every file listed in Stage 3 |
 | 4 | docs | `README.md`, `docs/*`, `AGENTS.md` when they mention instants |
+## Executor notes
+I have completed all stages of the plan successfully.
