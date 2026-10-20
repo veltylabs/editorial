@@ -13,7 +13,7 @@ var PostModel = model.Definition{
 		{Name: "id", Type: model.Text(), DB: &model.FieldDB{PK: true}},
 		{Name: "tenant_id", Type: model.Text(), NotNull: true, DB: &model.FieldDB{}},
 		{Name: "author_id", Type: model.Text(), NotNull: true, DB: &model.FieldDB{}},
-		{Name: "slug", Type: input.Text(), Label: "Slug", NotNull: true, Permitted: model.Permitted{Letters: true, Numbers: true, Extra: []rune{'-'}}, DB: &model.FieldDB{}},
+		{Name: "slug", Type: input.Text(), Label: "Page address", Help: "Appears in this post's web link. Lowercase words separated by dashes, e.g. new-hours-announcement.", NotNull: true, Permitted: model.Permitted{Letters: true, Numbers: true, Extra: []rune{'-'}}, DB: &model.FieldDB{}},
 		{Name: "title", Type: input.Text(), Label: "Title", NotNull: true, DB: &model.FieldDB{}},
 		{Name: "excerpt", Type: input.Textarea(), Label: "Excerpt", DB: &model.FieldDB{}},
 		{Name: "body", Type: input.Textarea(), Label: "Body", NotNull: true, DB: &model.FieldDB{}},
