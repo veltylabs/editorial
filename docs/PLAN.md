@@ -2,8 +2,10 @@
 PLAN: "refactor: typed instants of webtyp/time v0.6 in editorial — every instant field is time.Unix or time.Nano, no unit arithmetic"
 EXECUTOR: jules
 REVIEWER: none
-STATUS: running
+STATUS: review
 SESSION: 8474652431902609184
+PR: https://github.com/veltylabs/editorial/pull/4
+REVIEWED_COMMIT: 8cec53c1a58b7d727bad11317f6e36a59d6d66ea
 ---
 
 > Read AGENTS.md at the repo root before any change. This plan is complete: do not guess; if something does not fit, stop and ask in the PR.
