@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/veltylabs/editorial"
+	"webtyp.com/model"
 	"webtyp.com/router/mock"
 )
 
@@ -24,15 +25,15 @@ func TestViewPresenter(t *testing.T) {
 	}
 }
 
-func TestItemizers(t *testing.T) {
+func TestRowsDeclaredOnFields(t *testing.T) {
 	post := &editorial.Post{
 		Id:    "p1",
 		Title: "My Post",
 		Slug:  "my-post",
 	}
-	item := post.Item()
-	if item.ID != "p1" || item.Label != "My Post" || item.Description != "my-post" {
-		t.Errorf("unexpected Post Item projection: %+v", item)
+	rPost := model.RowOf(post)
+	if rPost.ID != "p1" || rPost.Title != "My Post" || rPost.Detail != "my-post" {
+		t.Errorf("unexpected Post RowOf projection: %+v", rPost)
 	}
 
 	pub := &editorial.Publication{
@@ -40,9 +41,9 @@ func TestItemizers(t *testing.T) {
 		Channel:     "web",
 		ExternalRef: "ref1",
 	}
-	pubItem := pub.Item()
-	if pubItem.ID != "pub1" || pubItem.Label != "web" || pubItem.Description != "ref1" {
-		t.Errorf("unexpected Publication Item projection: %+v", pubItem)
+	rPub := model.RowOf(pub)
+	if rPub.ID != "pub1" || rPub.Title != "web" || rPub.Detail != "ref1" {
+		t.Errorf("unexpected Publication RowOf projection: %+v", rPub)
 	}
 
 	trans := &editorial.PostTransition{
@@ -50,8 +51,8 @@ func TestItemizers(t *testing.T) {
 		ActorId: "actor1",
 		Reason:  "Approved",
 	}
-	transItem := trans.Item()
-	if transItem.ID != "t1" || transItem.Label != "actor1" || transItem.Description != "Approved" {
-		t.Errorf("unexpected PostTransition Item projection: %+v", transItem)
+	rTrans := model.RowOf(trans)
+	if rTrans.ID != "t1" || rTrans.Title != "actor1" || rTrans.Detail != "Approved" {
+		t.Errorf("unexpected PostTransition RowOf projection: %+v", rTrans)
 	}
 }

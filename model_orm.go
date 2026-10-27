@@ -9,27 +9,25 @@ import (
 )
 
 type Post struct {
-	Id          string
-	TenantId    string
-	AuthorId    string
-	Slug        string
-	Title       string
-	Excerpt     string
-	Body        string
-	CoverImage  string
-	State       int64
+	Id string
+	TenantId string
+	AuthorId string
+	Slug string
+	Title string
+	Excerpt string
+	Body string
+	CoverImage string
+	State int64
 	PublishedAt time.Nano
-	CreatedAt   time.Nano
-	UpdatedAt   time.Nano
+	CreatedAt time.Nano
+	UpdatedAt time.Nano
 }
 
 func (m *Post) ModelName() string { return "Post" }
 
 func (m *Post) Schema() []model.Field { return PostModel.Fields }
 
-func (m *Post) Pointers() []any {
-	return []any{&m.Id, &m.TenantId, &m.AuthorId, &m.Slug, &m.Title, &m.Excerpt, &m.Body, &m.CoverImage, &m.State, (*int64)(&m.PublishedAt), (*int64)(&m.CreatedAt), (*int64)(&m.UpdatedAt)}
-}
+func (m *Post) Pointers() []any { return []any{&m.Id, &m.TenantId, &m.AuthorId, &m.Slug, &m.Title, &m.Excerpt, &m.Body, &m.CoverImage, &m.State, (*int64)(&m.PublishedAt), (*int64)(&m.CreatedAt), (*int64)(&m.UpdatedAt)} }
 
 func (m *Post) IsNil() bool { return m == nil }
 
@@ -43,58 +41,32 @@ func (m *Post) EncodeFields(w model.FieldWriter) {
 	w.String("body", m.Body)
 	w.String("cover_image", m.CoverImage)
 	w.Int("state", m.State)
-	if m.PublishedAt != 0 {
-		w.Int("published_at", int64(m.PublishedAt))
-	}
+	if m.PublishedAt != 0 { w.Int("published_at", int64(m.PublishedAt)) }
 	w.Int("created_at", int64(m.CreatedAt))
 	w.Int("updated_at", int64(m.UpdatedAt))
 }
 
 func (m *Post) DecodeFields(r model.FieldReader) {
-	if v, ok := r.String("id"); ok {
-		m.Id = v
-	}
-	if v, ok := r.String("tenant_id"); ok {
-		m.TenantId = v
-	}
-	if v, ok := r.String("author_id"); ok {
-		m.AuthorId = v
-	}
-	if v, ok := r.String("slug"); ok {
-		m.Slug = v
-	}
-	if v, ok := r.String("title"); ok {
-		m.Title = v
-	}
-	if v, ok := r.String("excerpt"); ok {
-		m.Excerpt = v
-	}
-	if v, ok := r.String("body"); ok {
-		m.Body = v
-	}
-	if v, ok := r.String("cover_image"); ok {
-		m.CoverImage = v
-	}
-	if v, ok := r.Int("state"); ok {
-		m.State = v
-	}
-	if v, ok := r.Int("published_at"); ok {
-		m.PublishedAt = time.Nano(v)
-	}
-	if v, ok := r.Int("created_at"); ok {
-		m.CreatedAt = time.Nano(v)
-	}
-	if v, ok := r.Int("updated_at"); ok {
-		m.UpdatedAt = time.Nano(v)
-	}
+	if v, ok := r.String("id"); ok { m.Id = v }
+	if v, ok := r.String("tenant_id"); ok { m.TenantId = v }
+	if v, ok := r.String("author_id"); ok { m.AuthorId = v }
+	if v, ok := r.String("slug"); ok { m.Slug = v }
+	if v, ok := r.String("title"); ok { m.Title = v }
+	if v, ok := r.String("excerpt"); ok { m.Excerpt = v }
+	if v, ok := r.String("body"); ok { m.Body = v }
+	if v, ok := r.String("cover_image"); ok { m.CoverImage = v }
+	if v, ok := r.Int("state"); ok { m.State = v }
+	if v, ok := r.Int("published_at"); ok { m.PublishedAt = time.Nano(v) }
+	if v, ok := r.Int("created_at"); ok { m.CreatedAt = time.Nano(v) }
+	if v, ok := r.Int("updated_at"); ok { m.UpdatedAt = time.Nano(v) }
 }
 
 type PostList []*Post
 
-func (s *PostList) Len() int                         { return len(*s) }
-func (s *PostList) At(i int) model.Fielder           { return (*s)[i] }
-func (s *PostList) Append() model.Fielder            { v := &Post{}; *s = append(*s, v); return v }
-func (s *PostList) IsNil() bool                      { return s == nil }
+func (s *PostList) Len() int             { return len(*s) }
+func (s *PostList) At(i int) model.Fielder { return (*s)[i] }
+func (s *PostList) Append() model.Fielder  { v := &Post{}; *s = append(*s, v); return v }
+func (s *PostList) IsNil() bool          { return s == nil }
 func (s *PostList) EncodeFields(_ model.FieldWriter) {}
 func (s *PostList) DecodeFields(_ model.FieldReader) {}
 
@@ -103,31 +75,31 @@ func (m *Post) Validate(action byte) error {
 }
 
 var Post_ = struct {
-	Id          string
-	TenantId    string
-	AuthorId    string
-	Slug        string
-	Title       string
-	Excerpt     string
-	Body        string
-	CoverImage  string
-	State       string
+	Id string
+	TenantId string
+	AuthorId string
+	Slug string
+	Title string
+	Excerpt string
+	Body string
+	CoverImage string
+	State string
 	PublishedAt string
-	CreatedAt   string
-	UpdatedAt   string
+	CreatedAt string
+	UpdatedAt string
 }{
-	Id:          "id",
-	TenantId:    "tenant_id",
-	AuthorId:    "author_id",
-	Slug:        "slug",
-	Title:       "title",
-	Excerpt:     "excerpt",
-	Body:        "body",
-	CoverImage:  "cover_image",
-	State:       "state",
+	Id: "id",
+	TenantId: "tenant_id",
+	AuthorId: "author_id",
+	Slug: "slug",
+	Title: "title",
+	Excerpt: "excerpt",
+	Body: "body",
+	CoverImage: "cover_image",
+	State: "state",
 	PublishedAt: "published_at",
-	CreatedAt:   "created_at",
-	UpdatedAt:   "updated_at",
+	CreatedAt: "created_at",
+	UpdatedAt: "updated_at",
 }
 
 func ReadOnePost(qb *orm.QB, model *Post) (*Post, error) {
@@ -148,23 +120,21 @@ func ReadAllPost(qb *orm.QB) (PostList, error) {
 }
 
 type PostTransition struct {
-	Id        string
-	TenantId  string
-	PostId    string
+	Id string
+	TenantId string
+	PostId string
 	FromState int64
-	ToState   int64
-	ActorId   string
-	Reason    string
-	At        time.Nano
+	ToState int64
+	ActorId string
+	Reason string
+	At time.Nano
 }
 
 func (m *PostTransition) ModelName() string { return "PostTransition" }
 
 func (m *PostTransition) Schema() []model.Field { return PostTransitionModel.Fields }
 
-func (m *PostTransition) Pointers() []any {
-	return []any{&m.Id, &m.TenantId, &m.PostId, &m.FromState, &m.ToState, &m.ActorId, &m.Reason, (*int64)(&m.At)}
-}
+func (m *PostTransition) Pointers() []any { return []any{&m.Id, &m.TenantId, &m.PostId, &m.FromState, &m.ToState, &m.ActorId, &m.Reason, (*int64)(&m.At)} }
 
 func (m *PostTransition) IsNil() bool { return m == nil }
 
@@ -175,49 +145,27 @@ func (m *PostTransition) EncodeFields(w model.FieldWriter) {
 	w.Int("from_state", m.FromState)
 	w.Int("to_state", m.ToState)
 	w.String("actor_id", m.ActorId)
-	if m.Reason != "" {
-		w.String("reason", m.Reason)
-	}
+	if m.Reason != "" { w.String("reason", m.Reason) }
 	w.Int("at", int64(m.At))
 }
 
 func (m *PostTransition) DecodeFields(r model.FieldReader) {
-	if v, ok := r.String("id"); ok {
-		m.Id = v
-	}
-	if v, ok := r.String("tenant_id"); ok {
-		m.TenantId = v
-	}
-	if v, ok := r.String("post_id"); ok {
-		m.PostId = v
-	}
-	if v, ok := r.Int("from_state"); ok {
-		m.FromState = v
-	}
-	if v, ok := r.Int("to_state"); ok {
-		m.ToState = v
-	}
-	if v, ok := r.String("actor_id"); ok {
-		m.ActorId = v
-	}
-	if v, ok := r.String("reason"); ok {
-		m.Reason = v
-	}
-	if v, ok := r.Int("at"); ok {
-		m.At = time.Nano(v)
-	}
+	if v, ok := r.String("id"); ok { m.Id = v }
+	if v, ok := r.String("tenant_id"); ok { m.TenantId = v }
+	if v, ok := r.String("post_id"); ok { m.PostId = v }
+	if v, ok := r.Int("from_state"); ok { m.FromState = v }
+	if v, ok := r.Int("to_state"); ok { m.ToState = v }
+	if v, ok := r.String("actor_id"); ok { m.ActorId = v }
+	if v, ok := r.String("reason"); ok { m.Reason = v }
+	if v, ok := r.Int("at"); ok { m.At = time.Nano(v) }
 }
 
 type PostTransitionList []*PostTransition
 
-func (s *PostTransitionList) Len() int               { return len(*s) }
+func (s *PostTransitionList) Len() int             { return len(*s) }
 func (s *PostTransitionList) At(i int) model.Fielder { return (*s)[i] }
-func (s *PostTransitionList) Append() model.Fielder {
-	v := &PostTransition{}
-	*s = append(*s, v)
-	return v
-}
-func (s *PostTransitionList) IsNil() bool                      { return s == nil }
+func (s *PostTransitionList) Append() model.Fielder  { v := &PostTransition{}; *s = append(*s, v); return v }
+func (s *PostTransitionList) IsNil() bool          { return s == nil }
 func (s *PostTransitionList) EncodeFields(_ model.FieldWriter) {}
 func (s *PostTransitionList) DecodeFields(_ model.FieldReader) {}
 
@@ -226,23 +174,23 @@ func (m *PostTransition) Validate(action byte) error {
 }
 
 var PostTransition_ = struct {
-	Id        string
-	TenantId  string
-	PostId    string
+	Id string
+	TenantId string
+	PostId string
 	FromState string
-	ToState   string
-	ActorId   string
-	Reason    string
-	At        string
+	ToState string
+	ActorId string
+	Reason string
+	At string
 }{
-	Id:        "id",
-	TenantId:  "tenant_id",
-	PostId:    "post_id",
+	Id: "id",
+	TenantId: "tenant_id",
+	PostId: "post_id",
 	FromState: "from_state",
-	ToState:   "to_state",
-	ActorId:   "actor_id",
-	Reason:    "reason",
-	At:        "at",
+	ToState: "to_state",
+	ActorId: "actor_id",
+	Reason: "reason",
+	At: "at",
 }
 
 func ReadOnePostTransition(qb *orm.QB, model *PostTransition) (*PostTransition, error) {
@@ -269,10 +217,10 @@ func (m *PostTransition) SchemaExt() []model.FieldExt {
 }
 
 type Publication struct {
-	Id          string
-	TenantId    string
-	PostId      string
-	Channel     string
+	Id string
+	TenantId string
+	PostId string
+	Channel string
 	ExternalRef string
 	PublishedAt time.Nano
 }
@@ -281,9 +229,7 @@ func (m *Publication) ModelName() string { return "Publication" }
 
 func (m *Publication) Schema() []model.Field { return PublicationModel.Fields }
 
-func (m *Publication) Pointers() []any {
-	return []any{&m.Id, &m.TenantId, &m.PostId, &m.Channel, &m.ExternalRef, (*int64)(&m.PublishedAt)}
-}
+func (m *Publication) Pointers() []any { return []any{&m.Id, &m.TenantId, &m.PostId, &m.Channel, &m.ExternalRef, (*int64)(&m.PublishedAt)} }
 
 func (m *Publication) IsNil() bool { return m == nil }
 
@@ -292,39 +238,25 @@ func (m *Publication) EncodeFields(w model.FieldWriter) {
 	w.String("tenant_id", m.TenantId)
 	w.String("post_id", m.PostId)
 	w.String("channel", m.Channel)
-	if m.ExternalRef != "" {
-		w.String("external_ref", m.ExternalRef)
-	}
+	if m.ExternalRef != "" { w.String("external_ref", m.ExternalRef) }
 	w.Int("published_at", int64(m.PublishedAt))
 }
 
 func (m *Publication) DecodeFields(r model.FieldReader) {
-	if v, ok := r.String("id"); ok {
-		m.Id = v
-	}
-	if v, ok := r.String("tenant_id"); ok {
-		m.TenantId = v
-	}
-	if v, ok := r.String("post_id"); ok {
-		m.PostId = v
-	}
-	if v, ok := r.String("channel"); ok {
-		m.Channel = v
-	}
-	if v, ok := r.String("external_ref"); ok {
-		m.ExternalRef = v
-	}
-	if v, ok := r.Int("published_at"); ok {
-		m.PublishedAt = time.Nano(v)
-	}
+	if v, ok := r.String("id"); ok { m.Id = v }
+	if v, ok := r.String("tenant_id"); ok { m.TenantId = v }
+	if v, ok := r.String("post_id"); ok { m.PostId = v }
+	if v, ok := r.String("channel"); ok { m.Channel = v }
+	if v, ok := r.String("external_ref"); ok { m.ExternalRef = v }
+	if v, ok := r.Int("published_at"); ok { m.PublishedAt = time.Nano(v) }
 }
 
 type PublicationList []*Publication
 
-func (s *PublicationList) Len() int                         { return len(*s) }
-func (s *PublicationList) At(i int) model.Fielder           { return (*s)[i] }
-func (s *PublicationList) Append() model.Fielder            { v := &Publication{}; *s = append(*s, v); return v }
-func (s *PublicationList) IsNil() bool                      { return s == nil }
+func (s *PublicationList) Len() int             { return len(*s) }
+func (s *PublicationList) At(i int) model.Fielder { return (*s)[i] }
+func (s *PublicationList) Append() model.Fielder  { v := &Publication{}; *s = append(*s, v); return v }
+func (s *PublicationList) IsNil() bool          { return s == nil }
 func (s *PublicationList) EncodeFields(_ model.FieldWriter) {}
 func (s *PublicationList) DecodeFields(_ model.FieldReader) {}
 
@@ -333,17 +265,17 @@ func (m *Publication) Validate(action byte) error {
 }
 
 var Publication_ = struct {
-	Id          string
-	TenantId    string
-	PostId      string
-	Channel     string
+	Id string
+	TenantId string
+	PostId string
+	Channel string
 	ExternalRef string
 	PublishedAt string
 }{
-	Id:          "id",
-	TenantId:    "tenant_id",
-	PostId:      "post_id",
-	Channel:     "channel",
+	Id: "id",
+	TenantId: "tenant_id",
+	PostId: "post_id",
+	Channel: "channel",
 	ExternalRef: "external_ref",
 	PublishedAt: "published_at",
 }
@@ -372,68 +304,46 @@ func (m *Publication) SchemaExt() []model.FieldExt {
 }
 
 type ListPostsArgs struct {
-	TenantId       string
-	State          int64
+	TenantId string
+	State int64
 	HasStateFilter bool
-	AuthorId       string
-	Limit          int64
-	Offset         int64
+	AuthorId string
+	Limit int64
+	Offset int64
 }
 
 func (m *ListPostsArgs) ModelName() string { return "ListPostsArgs" }
 
 func (m *ListPostsArgs) Schema() []model.Field { return ListPostsArgsModel.Fields }
 
-func (m *ListPostsArgs) Pointers() []any {
-	return []any{&m.TenantId, &m.State, &m.HasStateFilter, &m.AuthorId, &m.Limit, &m.Offset}
-}
+func (m *ListPostsArgs) Pointers() []any { return []any{&m.TenantId, &m.State, &m.HasStateFilter, &m.AuthorId, &m.Limit, &m.Offset} }
 
 func (m *ListPostsArgs) IsNil() bool { return m == nil }
 
 func (m *ListPostsArgs) EncodeFields(w model.FieldWriter) {
 	w.String("tenant_id", m.TenantId)
-	if m.State != 0 {
-		w.Int("state", m.State)
-	}
+	if m.State != 0 { w.Int("state", m.State) }
 	w.Bool("has_state_filter", m.HasStateFilter)
-	if m.AuthorId != "" {
-		w.String("author_id", m.AuthorId)
-	}
+	if m.AuthorId != "" { w.String("author_id", m.AuthorId) }
 	w.Int("limit", m.Limit)
 	w.Int("offset", m.Offset)
 }
 
 func (m *ListPostsArgs) DecodeFields(r model.FieldReader) {
-	if v, ok := r.String("tenant_id"); ok {
-		m.TenantId = v
-	}
-	if v, ok := r.Int("state"); ok {
-		m.State = v
-	}
-	if v, ok := r.Bool("has_state_filter"); ok {
-		m.HasStateFilter = v
-	}
-	if v, ok := r.String("author_id"); ok {
-		m.AuthorId = v
-	}
-	if v, ok := r.Int("limit"); ok {
-		m.Limit = v
-	}
-	if v, ok := r.Int("offset"); ok {
-		m.Offset = v
-	}
+	if v, ok := r.String("tenant_id"); ok { m.TenantId = v }
+	if v, ok := r.Int("state"); ok { m.State = v }
+	if v, ok := r.Bool("has_state_filter"); ok { m.HasStateFilter = v }
+	if v, ok := r.String("author_id"); ok { m.AuthorId = v }
+	if v, ok := r.Int("limit"); ok { m.Limit = v }
+	if v, ok := r.Int("offset"); ok { m.Offset = v }
 }
 
 type ListPostsArgsList []*ListPostsArgs
 
-func (s *ListPostsArgsList) Len() int               { return len(*s) }
+func (s *ListPostsArgsList) Len() int             { return len(*s) }
 func (s *ListPostsArgsList) At(i int) model.Fielder { return (*s)[i] }
-func (s *ListPostsArgsList) Append() model.Fielder {
-	v := &ListPostsArgs{}
-	*s = append(*s, v)
-	return v
-}
-func (s *ListPostsArgsList) IsNil() bool                      { return s == nil }
+func (s *ListPostsArgsList) Append() model.Fielder  { v := &ListPostsArgs{}; *s = append(*s, v); return v }
+func (s *ListPostsArgsList) IsNil() bool          { return s == nil }
 func (s *ListPostsArgsList) EncodeFields(_ model.FieldWriter) {}
 func (s *ListPostsArgsList) DecodeFields(_ model.FieldReader) {}
 
@@ -443,7 +353,7 @@ func (m *ListPostsArgs) Validate(action byte) error {
 
 type GetPostArgs struct {
 	TenantId string
-	Id       string
+	Id string
 }
 
 func (m *GetPostArgs) ModelName() string { return "GetPostArgs" }
@@ -460,20 +370,16 @@ func (m *GetPostArgs) EncodeFields(w model.FieldWriter) {
 }
 
 func (m *GetPostArgs) DecodeFields(r model.FieldReader) {
-	if v, ok := r.String("tenant_id"); ok {
-		m.TenantId = v
-	}
-	if v, ok := r.String("id"); ok {
-		m.Id = v
-	}
+	if v, ok := r.String("tenant_id"); ok { m.TenantId = v }
+	if v, ok := r.String("id"); ok { m.Id = v }
 }
 
 type GetPostArgsList []*GetPostArgs
 
-func (s *GetPostArgsList) Len() int                         { return len(*s) }
-func (s *GetPostArgsList) At(i int) model.Fielder           { return (*s)[i] }
-func (s *GetPostArgsList) Append() model.Fielder            { v := &GetPostArgs{}; *s = append(*s, v); return v }
-func (s *GetPostArgsList) IsNil() bool                      { return s == nil }
+func (s *GetPostArgsList) Len() int             { return len(*s) }
+func (s *GetPostArgsList) At(i int) model.Fielder { return (*s)[i] }
+func (s *GetPostArgsList) Append() model.Fielder  { v := &GetPostArgs{}; *s = append(*s, v); return v }
+func (s *GetPostArgsList) IsNil() bool          { return s == nil }
 func (s *GetPostArgsList) EncodeFields(_ model.FieldWriter) {}
 func (s *GetPostArgsList) DecodeFields(_ model.FieldReader) {}
 
@@ -483,7 +389,7 @@ func (m *GetPostArgs) Validate(action byte) error {
 
 type DeletePostArgs struct {
 	TenantId string
-	Id       string
+	Id string
 }
 
 func (m *DeletePostArgs) ModelName() string { return "DeletePostArgs" }
@@ -500,24 +406,16 @@ func (m *DeletePostArgs) EncodeFields(w model.FieldWriter) {
 }
 
 func (m *DeletePostArgs) DecodeFields(r model.FieldReader) {
-	if v, ok := r.String("tenant_id"); ok {
-		m.TenantId = v
-	}
-	if v, ok := r.String("id"); ok {
-		m.Id = v
-	}
+	if v, ok := r.String("tenant_id"); ok { m.TenantId = v }
+	if v, ok := r.String("id"); ok { m.Id = v }
 }
 
 type DeletePostArgsList []*DeletePostArgs
 
-func (s *DeletePostArgsList) Len() int               { return len(*s) }
+func (s *DeletePostArgsList) Len() int             { return len(*s) }
 func (s *DeletePostArgsList) At(i int) model.Fielder { return (*s)[i] }
-func (s *DeletePostArgsList) Append() model.Fielder {
-	v := &DeletePostArgs{}
-	*s = append(*s, v)
-	return v
-}
-func (s *DeletePostArgsList) IsNil() bool                      { return s == nil }
+func (s *DeletePostArgsList) Append() model.Fielder  { v := &DeletePostArgs{}; *s = append(*s, v); return v }
+func (s *DeletePostArgsList) IsNil() bool          { return s == nil }
 func (s *DeletePostArgsList) EncodeFields(_ model.FieldWriter) {}
 func (s *DeletePostArgsList) DecodeFields(_ model.FieldReader) {}
 
@@ -527,8 +425,8 @@ func (m *DeletePostArgs) Validate(action byte) error {
 
 type PostActionArgs struct {
 	TenantId string
-	PostId   string
-	ActorId  string
+	PostId string
+	ActorId string
 }
 
 func (m *PostActionArgs) ModelName() string { return "PostActionArgs" }
@@ -546,27 +444,17 @@ func (m *PostActionArgs) EncodeFields(w model.FieldWriter) {
 }
 
 func (m *PostActionArgs) DecodeFields(r model.FieldReader) {
-	if v, ok := r.String("tenant_id"); ok {
-		m.TenantId = v
-	}
-	if v, ok := r.String("post_id"); ok {
-		m.PostId = v
-	}
-	if v, ok := r.String("actor_id"); ok {
-		m.ActorId = v
-	}
+	if v, ok := r.String("tenant_id"); ok { m.TenantId = v }
+	if v, ok := r.String("post_id"); ok { m.PostId = v }
+	if v, ok := r.String("actor_id"); ok { m.ActorId = v }
 }
 
 type PostActionArgsList []*PostActionArgs
 
-func (s *PostActionArgsList) Len() int               { return len(*s) }
+func (s *PostActionArgsList) Len() int             { return len(*s) }
 func (s *PostActionArgsList) At(i int) model.Fielder { return (*s)[i] }
-func (s *PostActionArgsList) Append() model.Fielder {
-	v := &PostActionArgs{}
-	*s = append(*s, v)
-	return v
-}
-func (s *PostActionArgsList) IsNil() bool                      { return s == nil }
+func (s *PostActionArgsList) Append() model.Fielder  { v := &PostActionArgs{}; *s = append(*s, v); return v }
+func (s *PostActionArgsList) IsNil() bool          { return s == nil }
 func (s *PostActionArgsList) EncodeFields(_ model.FieldWriter) {}
 func (s *PostActionArgsList) DecodeFields(_ model.FieldReader) {}
 
@@ -576,18 +464,16 @@ func (m *PostActionArgs) Validate(action byte) error {
 
 type RequestChangesArgs struct {
 	TenantId string
-	PostId   string
-	ActorId  string
-	Reason   string
+	PostId string
+	ActorId string
+	Reason string
 }
 
 func (m *RequestChangesArgs) ModelName() string { return "RequestChangesArgs" }
 
 func (m *RequestChangesArgs) Schema() []model.Field { return RequestChangesArgsModel.Fields }
 
-func (m *RequestChangesArgs) Pointers() []any {
-	return []any{&m.TenantId, &m.PostId, &m.ActorId, &m.Reason}
-}
+func (m *RequestChangesArgs) Pointers() []any { return []any{&m.TenantId, &m.PostId, &m.ActorId, &m.Reason} }
 
 func (m *RequestChangesArgs) IsNil() bool { return m == nil }
 
@@ -599,30 +485,18 @@ func (m *RequestChangesArgs) EncodeFields(w model.FieldWriter) {
 }
 
 func (m *RequestChangesArgs) DecodeFields(r model.FieldReader) {
-	if v, ok := r.String("tenant_id"); ok {
-		m.TenantId = v
-	}
-	if v, ok := r.String("post_id"); ok {
-		m.PostId = v
-	}
-	if v, ok := r.String("actor_id"); ok {
-		m.ActorId = v
-	}
-	if v, ok := r.String("reason"); ok {
-		m.Reason = v
-	}
+	if v, ok := r.String("tenant_id"); ok { m.TenantId = v }
+	if v, ok := r.String("post_id"); ok { m.PostId = v }
+	if v, ok := r.String("actor_id"); ok { m.ActorId = v }
+	if v, ok := r.String("reason"); ok { m.Reason = v }
 }
 
 type RequestChangesArgsList []*RequestChangesArgs
 
-func (s *RequestChangesArgsList) Len() int               { return len(*s) }
+func (s *RequestChangesArgsList) Len() int             { return len(*s) }
 func (s *RequestChangesArgsList) At(i int) model.Fielder { return (*s)[i] }
-func (s *RequestChangesArgsList) Append() model.Fielder {
-	v := &RequestChangesArgs{}
-	*s = append(*s, v)
-	return v
-}
-func (s *RequestChangesArgsList) IsNil() bool                      { return s == nil }
+func (s *RequestChangesArgsList) Append() model.Fielder  { v := &RequestChangesArgs{}; *s = append(*s, v); return v }
+func (s *RequestChangesArgsList) IsNil() bool          { return s == nil }
 func (s *RequestChangesArgsList) EncodeFields(_ model.FieldWriter) {}
 func (s *RequestChangesArgsList) DecodeFields(_ model.FieldReader) {}
 
@@ -632,8 +506,8 @@ func (m *RequestChangesArgs) Validate(action byte) error {
 
 type ListPublicationsArgs struct {
 	TenantId string
-	PostId   string
-	Channel  string
+	PostId string
+	Channel string
 }
 
 func (m *ListPublicationsArgs) ModelName() string { return "ListPublicationsArgs" }
@@ -646,36 +520,22 @@ func (m *ListPublicationsArgs) IsNil() bool { return m == nil }
 
 func (m *ListPublicationsArgs) EncodeFields(w model.FieldWriter) {
 	w.String("tenant_id", m.TenantId)
-	if m.PostId != "" {
-		w.String("post_id", m.PostId)
-	}
-	if m.Channel != "" {
-		w.String("channel", m.Channel)
-	}
+	if m.PostId != "" { w.String("post_id", m.PostId) }
+	if m.Channel != "" { w.String("channel", m.Channel) }
 }
 
 func (m *ListPublicationsArgs) DecodeFields(r model.FieldReader) {
-	if v, ok := r.String("tenant_id"); ok {
-		m.TenantId = v
-	}
-	if v, ok := r.String("post_id"); ok {
-		m.PostId = v
-	}
-	if v, ok := r.String("channel"); ok {
-		m.Channel = v
-	}
+	if v, ok := r.String("tenant_id"); ok { m.TenantId = v }
+	if v, ok := r.String("post_id"); ok { m.PostId = v }
+	if v, ok := r.String("channel"); ok { m.Channel = v }
 }
 
 type ListPublicationsArgsList []*ListPublicationsArgs
 
-func (s *ListPublicationsArgsList) Len() int               { return len(*s) }
+func (s *ListPublicationsArgsList) Len() int             { return len(*s) }
 func (s *ListPublicationsArgsList) At(i int) model.Fielder { return (*s)[i] }
-func (s *ListPublicationsArgsList) Append() model.Fielder {
-	v := &ListPublicationsArgs{}
-	*s = append(*s, v)
-	return v
-}
-func (s *ListPublicationsArgsList) IsNil() bool                      { return s == nil }
+func (s *ListPublicationsArgsList) Append() model.Fielder  { v := &ListPublicationsArgs{}; *s = append(*s, v); return v }
+func (s *ListPublicationsArgsList) IsNil() bool          { return s == nil }
 func (s *ListPublicationsArgsList) EncodeFields(_ model.FieldWriter) {}
 func (s *ListPublicationsArgsList) DecodeFields(_ model.FieldReader) {}
 
@@ -685,7 +545,7 @@ func (m *ListPublicationsArgs) Validate(action byte) error {
 
 type ListTransitionsArgs struct {
 	TenantId string
-	PostId   string
+	PostId string
 }
 
 func (m *ListTransitionsArgs) ModelName() string { return "ListTransitionsArgs" }
@@ -702,27 +562,20 @@ func (m *ListTransitionsArgs) EncodeFields(w model.FieldWriter) {
 }
 
 func (m *ListTransitionsArgs) DecodeFields(r model.FieldReader) {
-	if v, ok := r.String("tenant_id"); ok {
-		m.TenantId = v
-	}
-	if v, ok := r.String("post_id"); ok {
-		m.PostId = v
-	}
+	if v, ok := r.String("tenant_id"); ok { m.TenantId = v }
+	if v, ok := r.String("post_id"); ok { m.PostId = v }
 }
 
 type ListTransitionsArgsList []*ListTransitionsArgs
 
-func (s *ListTransitionsArgsList) Len() int               { return len(*s) }
+func (s *ListTransitionsArgsList) Len() int             { return len(*s) }
 func (s *ListTransitionsArgsList) At(i int) model.Fielder { return (*s)[i] }
-func (s *ListTransitionsArgsList) Append() model.Fielder {
-	v := &ListTransitionsArgs{}
-	*s = append(*s, v)
-	return v
-}
-func (s *ListTransitionsArgsList) IsNil() bool                      { return s == nil }
+func (s *ListTransitionsArgsList) Append() model.Fielder  { v := &ListTransitionsArgs{}; *s = append(*s, v); return v }
+func (s *ListTransitionsArgsList) IsNil() bool          { return s == nil }
 func (s *ListTransitionsArgsList) EncodeFields(_ model.FieldWriter) {}
 func (s *ListTransitionsArgsList) DecodeFields(_ model.FieldReader) {}
 
 func (m *ListTransitionsArgs) Validate(action byte) error {
 	return model.ValidateFields(action, m)
 }
+

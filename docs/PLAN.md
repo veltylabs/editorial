@@ -2,8 +2,10 @@
 PLAN: "feat!: list rows declared on the model fields (Row/Options); Item() removed"
 EXECUTOR: jules
 REVIEWER: none
-STATUS: running
+STATUS: review
 SESSION: 6215416551687614236
+PR: https://github.com/veltylabs/editorial/pull/5
+REVIEWED_COMMIT: 4a493c1a3433130772345a2c8edefd641a7b2ea2
 ---
 
 > Read AGENTS.md at the repo root before any change.

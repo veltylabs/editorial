@@ -1,4 +1,4 @@
 # editorial
 <img src="docs/img/badges.svg">
 
-Editorial workflow module: authored content, human or machine review, and multi-channel publication ledger
+Módulo de flujo editorial: contenido redactado, revisión humana o automática y registro de publicaciones multicanal.
