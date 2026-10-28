@@ -12,7 +12,7 @@ require (
 	webtyp.com/router v0.4.9
 	webtyp.com/storage v0.1.8
 	webtyp.com/time v0.6.2
-	webtyp.com/view v0.6.48
+	webtyp.com/view v0.6.49
 )
 
 require webtyp.com/json v0.5.29
