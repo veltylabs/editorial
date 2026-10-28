@@ -74,6 +74,10 @@ func (m *Post) Validate(action byte) error {
 	return model.ValidateFields(action, m)
 }
 
+func (m *Post) Item() model.Item {
+	return model.Item{ID: m.Id, Label: m.Title, Description: m.Slug}
+}
+
 var Post_ = struct {
 	Id string
 	TenantId string
@@ -173,6 +177,10 @@ func (m *PostTransition) Validate(action byte) error {
 	return model.ValidateFields(action, m)
 }
 
+func (m *PostTransition) Item() model.Item {
+	return model.Item{ID: m.Id, Label: m.ActorId, Description: m.Reason}
+}
+
 var PostTransition_ = struct {
 	Id string
 	TenantId string
@@ -262,6 +270,10 @@ func (s *PublicationList) DecodeFields(_ model.FieldReader) {}
 
 func (m *Publication) Validate(action byte) error {
 	return model.ValidateFields(action, m)
+}
+
+func (m *Publication) Item() model.Item {
+	return model.Item{ID: m.Id, Label: m.Channel, Description: m.ExternalRef}
 }
 
 var Publication_ = struct {
