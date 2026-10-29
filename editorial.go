@@ -14,14 +14,15 @@ import (
 // compares them by asserting this type and comparing the value: == between two
 // error values compiles, under TinyGo, to runtime.interfaceEqual, which pulls
 // internal/reflectlite into the wasm binary.
-type domainError string
 
-func (e domainError) Error() string { return string(e) }
+
+
 
 const (
-	ErrNotFound       domainError = "editorial: not found"
-	ErrAlreadyExists  domainError = "editorial: already exists"
-	ErrReasonRequired domainError = "editorial: reason is required when requesting changes"
+	ErrNotFound       model.NotFound = "editorial: not found"
+	ErrAlreadyExists  model.Conflict = "editorial: already exists"
+	ErrReasonRequired model.Invalid = "editorial: reason is required when requesting changes"
+	ErrCannotRead     model.Invalid = "editorial: cannot read the request"
 )
 
 const (
@@ -202,9 +203,11 @@ func (m *Module) transitionPost(tenantId, postId, actorId string, targetState St
 
 func (m *Module) GetPost(tenantId, id string) (*Post, error) {
 	post := &Post{}
-	err := m.db.Query(post).
-		Where("tenant_id").Eq(tenantId).
-		Where("id").Eq(id).
+	q := m.db.Query(post)
+	if tenantId != "" {
+		q = q.Where("tenant_id").Eq(tenantId)
+	}
+	err := q.Where("id").Eq(id).
 		ReadOne()
 	if err != nil {
 		if orm.IsNotFound(err) || storage.IsNoRows(err) {
@@ -246,7 +249,7 @@ func (m *Module) UpsertPost(tenantId string, input *Post) (*Post, error) {
 		var err error
 		existing, err = m.GetPost(tenantId, input.Id)
 		if err != nil {
-			if e, ok := err.(domainError); !ok || e != ErrNotFound {
+			if model.KindOf(err) != model.ErrorNotFound {
 				return nil, err
 			}
 		}
@@ -289,11 +292,11 @@ func (m *Module) UpsertPost(tenantId string, input *Post) (*Post, error) {
 }
 
 func (m *Module) DeletePost(tenantId, id string) error {
-	_, err := m.GetPost(tenantId, id)
+	post, err := m.GetPost(tenantId, id)
 	if err != nil {
 		return err
 	}
-	err = m.db.Delete(&Post{}, orm.Eq("tenant_id", tenantId), orm.Eq("id", id))
+	err = m.db.Delete(&Post{}, orm.Eq("tenant_id", post.TenantId), orm.Eq("id", id))
 	if err != nil {
 		if orm.IsNotFound(err) || storage.IsNoRows(err) {
 			return ErrNotFound

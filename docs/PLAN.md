@@ -2,7 +2,7 @@
 PLAN: "refactor: module review — errors via rpc.WriteError, resources from tables, screens via view.MountSave, foreign keys, translations"
 EXECUTOR: jules
 REVIEWER: none
-STATUS: running
+STATUS: finished
 SESSION: 15692168558440316430
 ---
 

@@ -1,5 +1,7 @@
 package editorial
 
+import "webtyp.com/model"
+
 type State uint8
 
 const (
@@ -30,7 +32,7 @@ func (s State) String() string {
 	}
 }
 
-const ErrInvalidTransition domainError = "invalid state transition"
+const ErrInvalidTransition model.Invalid = "invalid state transition"
 
 type transitionRule struct {
 	From State

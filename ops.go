@@ -3,6 +3,8 @@ package editorial
 import (
 	"webtyp.com/model"
 	"webtyp.com/router"
+	"webtyp.com/rpc"
+	"webtyp.com/view"
 )
 
 var _ router.OperationModule = (*Module)(nil)
@@ -13,11 +15,7 @@ var _ router.OperationModule = (*Module)(nil)
 // qualified name.
 const ModelName = "editorial"
 
-const (
-	ResourcePost        model.Resource = "post"
-	ResourcePostReview  model.Resource = "post_review"
-	ResourcePublication model.Resource = "publication"
-)
+var ResourcePostReview = model.FeatureResource("post_review")
 
 const (
 	OpListPosts        = "list_posts"
@@ -36,120 +34,89 @@ func (m *Module) ModelName() string {
 	return ModelName
 }
 
-func mapErrorStatus(err error) int {
-	if err == nil {
-		return 200
-	}
-	if e, ok := err.(domainError); ok {
-		switch e {
-		case ErrNotFound:
-			return 404
-		case ErrAlreadyExists:
-			return 409
-		case ErrInvalidTransition, ErrReasonRequired:
-			return 400
-		}
-	}
-	return 500
-}
-
 func (m *Module) MountOperations(reg router.OperationRegistry) {
 	reg.Operation(OpListPosts, func(ctx router.Context) {
 		var args ListPostsArgs
 		if err := ctx.Decode(&args); err != nil {
-			ctx.WriteStatus(400)
+			rpc.WriteError(ctx, ErrCannotRead)
 			return
 		}
 		if err := args.Validate(model.ActionRead); err != nil {
-			ctx.WriteStatus(400)
+			rpc.WriteError(ctx, ErrCannotRead)
 			return
 		}
 		list, err := m.ListPosts(&args)
 		if err != nil {
-			ctx.WriteStatus(mapErrorStatus(err))
+			rpc.WriteError(ctx, err)
 			return
 		}
 		ctx.Encode(&list)
-	}).Requires(ResourcePost, model.Read).Accepts(&ListPostsArgs{})
+	}).Requires(model.ResourceOf(&PostModel), model.Read).Accepts(&ListPostsArgs{})
 
 	reg.Operation(OpGetPost, func(ctx router.Context) {
 		var args GetPostArgs
 		if err := ctx.Decode(&args); err != nil {
-			ctx.WriteStatus(400)
+			rpc.WriteError(ctx, ErrCannotRead)
 			return
 		}
 		if err := args.Validate(model.ActionRead); err != nil {
-			ctx.WriteStatus(400)
+			rpc.WriteError(ctx, ErrCannotRead)
 			return
 		}
 		post, err := m.GetPost(args.TenantId, args.Id)
 		if err != nil {
-			ctx.WriteStatus(mapErrorStatus(err))
+			rpc.WriteError(ctx, err)
 			return
 		}
 		ctx.Encode(post)
-	}).Requires(ResourcePost, model.Read).Accepts(&GetPostArgs{})
+	}).Requires(model.ResourceOf(&PostModel), model.Read).Accepts(&GetPostArgs{})
 
-	reg.Operation(OpUpsertPost, func(ctx router.Context) {
-		var args Post
-		if err := ctx.Decode(&args); err != nil {
-			ctx.WriteStatus(400)
-			return
+	view.MountSave(reg, OpUpsertPost, func(p *Post) error {
+		out, err := m.UpsertPost(p.TenantId, p)
+		if err == nil {
+			*p = *out
 		}
-		post, err := m.UpsertPost(args.TenantId, &args)
-		if err != nil {
-			ctx.WriteStatus(mapErrorStatus(err))
-			return
-		}
-		ctx.Encode(post)
-	}).Requires(ResourcePost, model.Create|model.Update).Accepts(&Post{})
+		return err
+	}).Requires(model.ResourceOf(&PostModel), model.Create|model.Update)
 
-	reg.Operation(OpDeletePost, func(ctx router.Context) {
-		var args DeletePostArgs
-		if err := ctx.Decode(&args); err != nil {
-			ctx.WriteStatus(400)
-			return
+	view.MountDelete(reg, OpDeletePost, func(ids []string) error {
+		for _, id := range ids {
+			if err := m.DeletePost("", id); err != nil {
+				return err
+			}
 		}
-		if err := args.Validate(model.ActionDelete); err != nil {
-			ctx.WriteStatus(400)
-			return
-		}
-		if err := m.DeletePost(args.TenantId, args.Id); err != nil {
-			ctx.WriteStatus(mapErrorStatus(err))
-			return
-		}
-		ctx.WriteStatus(200)
-	}).Requires(ResourcePost, model.Delete).Accepts(&DeletePostArgs{})
+		return nil
+	}).Requires(model.ResourceOf(&PostModel), model.Delete)
 
 	reg.Operation(OpSubmitPost, func(ctx router.Context) {
 		var args PostActionArgs
 		if err := ctx.Decode(&args); err != nil {
-			ctx.WriteStatus(400)
+			rpc.WriteError(ctx, ErrCannotRead)
 			return
 		}
 		if err := args.Validate(model.ActionUpdate); err != nil {
-			ctx.WriteStatus(400)
+			rpc.WriteError(ctx, ErrCannotRead)
 			return
 		}
 		if err := m.Submit(args.TenantId, args.PostId, args.ActorId); err != nil {
-			ctx.WriteStatus(mapErrorStatus(err))
+			rpc.WriteError(ctx, err)
 			return
 		}
 		ctx.WriteStatus(200)
-	}).Requires(ResourcePost, model.Update).Accepts(&PostActionArgs{})
+	}).Requires(model.ResourceOf(&PostModel), model.Update).Accepts(&PostActionArgs{})
 
 	reg.Operation(OpApprovePost, func(ctx router.Context) {
 		var args PostActionArgs
 		if err := ctx.Decode(&args); err != nil {
-			ctx.WriteStatus(400)
+			rpc.WriteError(ctx, ErrCannotRead)
 			return
 		}
 		if err := args.Validate(model.ActionUpdate); err != nil {
-			ctx.WriteStatus(400)
+			rpc.WriteError(ctx, ErrCannotRead)
 			return
 		}
 		if err := m.Approve(args.TenantId, args.PostId, args.ActorId); err != nil {
-			ctx.WriteStatus(mapErrorStatus(err))
+			rpc.WriteError(ctx, err)
 			return
 		}
 		ctx.WriteStatus(200)
@@ -158,15 +125,15 @@ func (m *Module) MountOperations(reg router.OperationRegistry) {
 	reg.Operation(OpRequestChanges, func(ctx router.Context) {
 		var args RequestChangesArgs
 		if err := ctx.Decode(&args); err != nil {
-			ctx.WriteStatus(400)
+			rpc.WriteError(ctx, ErrCannotRead)
 			return
 		}
 		if err := args.Validate(model.ActionUpdate); err != nil {
-			ctx.WriteStatus(400)
+			rpc.WriteError(ctx, ErrCannotRead)
 			return
 		}
 		if err := m.RequestChanges(args.TenantId, args.PostId, args.ActorId, args.Reason); err != nil {
-			ctx.WriteStatus(mapErrorStatus(err))
+			rpc.WriteError(ctx, err)
 			return
 		}
 		ctx.WriteStatus(200)
@@ -175,15 +142,15 @@ func (m *Module) MountOperations(reg router.OperationRegistry) {
 	reg.Operation(OpRetirePost, func(ctx router.Context) {
 		var args PostActionArgs
 		if err := ctx.Decode(&args); err != nil {
-			ctx.WriteStatus(400)
+			rpc.WriteError(ctx, ErrCannotRead)
 			return
 		}
 		if err := args.Validate(model.ActionUpdate); err != nil {
-			ctx.WriteStatus(400)
+			rpc.WriteError(ctx, ErrCannotRead)
 			return
 		}
 		if err := m.Retire(args.TenantId, args.PostId, args.ActorId); err != nil {
-			ctx.WriteStatus(mapErrorStatus(err))
+			rpc.WriteError(ctx, err)
 			return
 		}
 		ctx.WriteStatus(200)
@@ -192,36 +159,36 @@ func (m *Module) MountOperations(reg router.OperationRegistry) {
 	reg.Operation(OpListPublications, func(ctx router.Context) {
 		var args ListPublicationsArgs
 		if err := ctx.Decode(&args); err != nil {
-			ctx.WriteStatus(400)
+			rpc.WriteError(ctx, ErrCannotRead)
 			return
 		}
 		if err := args.Validate(model.ActionRead); err != nil {
-			ctx.WriteStatus(400)
+			rpc.WriteError(ctx, ErrCannotRead)
 			return
 		}
 		pubs, err := m.ListPublications(&args)
 		if err != nil {
-			ctx.WriteStatus(mapErrorStatus(err))
+			rpc.WriteError(ctx, err)
 			return
 		}
 		ctx.Encode(&pubs)
-	}).Requires(ResourcePublication, model.Read).Accepts(&ListPublicationsArgs{})
+	}).Requires(model.ResourceOf(&PublicationModel), model.Read).Accepts(&ListPublicationsArgs{})
 
 	reg.Operation(OpListTransitions, func(ctx router.Context) {
 		var args ListTransitionsArgs
 		if err := ctx.Decode(&args); err != nil {
-			ctx.WriteStatus(400)
+			rpc.WriteError(ctx, ErrCannotRead)
 			return
 		}
 		if err := args.Validate(model.ActionRead); err != nil {
-			ctx.WriteStatus(400)
+			rpc.WriteError(ctx, ErrCannotRead)
 			return
 		}
 		trans, err := m.ListTransitions(&args)
 		if err != nil {
-			ctx.WriteStatus(mapErrorStatus(err))
+			rpc.WriteError(ctx, err)
 			return
 		}
 		ctx.Encode(&trans)
-	}).Requires(ResourcePost, model.Read).Accepts(&ListTransitionsArgs{})
+	}).Requires(model.ResourceOf(&PostModel), model.Read).Accepts(&ListTransitionsArgs{})
 }
