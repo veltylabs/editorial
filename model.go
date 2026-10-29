@@ -74,19 +74,13 @@ var GetPostArgsModel = model.Definition{
 	},
 }
 
-var DeletePostArgsModel = model.Definition{
-	Name: "DeletePostArgs",
-	Fields: model.Fields{
-		{Name: "tenant_id", Type: model.Text(), NotNull: true},
-		{Name: "id", Type: model.Text(), NotNull: true},
-	},
-}
+
 
 var PostActionArgsModel = model.Definition{
 	Name: "PostActionArgs",
 	Fields: model.Fields{
 		{Name: "tenant_id", Type: model.Text(), NotNull: true},
-		{Name: "post_id", Type: model.Text(), NotNull: true},
+		{Name: "post_id", Type: model.Text(), NotNull: true, Ref: &PostModel, DB: &model.FieldDB{RefColumn: "id"}},
 		{Name: "actor_id", Type: model.Text(), NotNull: true},
 	},
 }
@@ -95,7 +89,7 @@ var RequestChangesArgsModel = model.Definition{
 	Name: "RequestChangesArgs",
 	Fields: model.Fields{
 		{Name: "tenant_id", Type: model.Text(), NotNull: true},
-		{Name: "post_id", Type: model.Text(), NotNull: true},
+		{Name: "post_id", Type: model.Text(), NotNull: true, Ref: &PostModel, DB: &model.FieldDB{RefColumn: "id"}},
 		{Name: "actor_id", Type: model.Text(), NotNull: true},
 		{Name: "reason", Type: input.Textarea(), Label: "Reason", NotNull: true},
 	},
@@ -105,7 +99,7 @@ var ListPublicationsArgsModel = model.Definition{
 	Name: "ListPublicationsArgs",
 	Fields: model.Fields{
 		{Name: "tenant_id", Type: model.Text(), NotNull: true},
-		{Name: "post_id", Type: model.Text(), OmitEmpty: true},
+		{Name: "post_id", Type: model.Text(), OmitEmpty: true, Ref: &PostModel, DB: &model.FieldDB{RefColumn: "id"}},
 		{Name: "channel", Type: model.Text(), OmitEmpty: true},
 	},
 }
@@ -114,6 +108,6 @@ var ListTransitionsArgsModel = model.Definition{
 	Name: "ListTransitionsArgs",
 	Fields: model.Fields{
 		{Name: "tenant_id", Type: model.Text(), NotNull: true},
-		{Name: "post_id", Type: model.Text(), NotNull: true},
+		{Name: "post_id", Type: model.Text(), NotNull: true, Ref: &PostModel, DB: &model.FieldDB{RefColumn: "id"}},
 	},
 }

@@ -399,42 +399,6 @@ func (m *GetPostArgs) Validate(action byte) error {
 	return model.ValidateFields(action, m)
 }
 
-type DeletePostArgs struct {
-	TenantId string
-	Id string
-}
-
-func (m *DeletePostArgs) ModelName() string { return "DeletePostArgs" }
-
-func (m *DeletePostArgs) Schema() []model.Field { return DeletePostArgsModel.Fields }
-
-func (m *DeletePostArgs) Pointers() []any { return []any{&m.TenantId, &m.Id} }
-
-func (m *DeletePostArgs) IsNil() bool { return m == nil }
-
-func (m *DeletePostArgs) EncodeFields(w model.FieldWriter) {
-	w.String("tenant_id", m.TenantId)
-	w.String("id", m.Id)
-}
-
-func (m *DeletePostArgs) DecodeFields(r model.FieldReader) {
-	if v, ok := r.String("tenant_id"); ok { m.TenantId = v }
-	if v, ok := r.String("id"); ok { m.Id = v }
-}
-
-type DeletePostArgsList []*DeletePostArgs
-
-func (s *DeletePostArgsList) Len() int             { return len(*s) }
-func (s *DeletePostArgsList) At(i int) model.Fielder { return (*s)[i] }
-func (s *DeletePostArgsList) Append() model.Fielder  { v := &DeletePostArgs{}; *s = append(*s, v); return v }
-func (s *DeletePostArgsList) IsNil() bool          { return s == nil }
-func (s *DeletePostArgsList) EncodeFields(_ model.FieldWriter) {}
-func (s *DeletePostArgsList) DecodeFields(_ model.FieldReader) {}
-
-func (m *DeletePostArgs) Validate(action byte) error {
-	return model.ValidateFields(action, m)
-}
-
 type PostActionArgs struct {
 	TenantId string
 	PostId string
@@ -472,6 +436,39 @@ func (s *PostActionArgsList) DecodeFields(_ model.FieldReader) {}
 
 func (m *PostActionArgs) Validate(action byte) error {
 	return model.ValidateFields(action, m)
+}
+
+var PostActionArgs_ = struct {
+	TenantId string
+	PostId string
+	ActorId string
+}{
+	TenantId: "tenant_id",
+	PostId: "post_id",
+	ActorId: "actor_id",
+}
+
+func ReadOnePostActionArgs(qb *orm.QB, model *PostActionArgs) (*PostActionArgs, error) {
+	err := qb.ReadOne()
+	if err != nil {
+		return nil, err
+	}
+	return model, nil
+}
+
+func ReadAllPostActionArgs(qb *orm.QB) (PostActionArgsList, error) {
+	var results PostActionArgsList
+	err := qb.ReadAll(
+		func() model.Model { return &PostActionArgs{} },
+		func(m model.Model) { results = append(results, m.(*PostActionArgs)) },
+	)
+	return results, err
+}
+
+func (m *PostActionArgs) SchemaExt() []model.FieldExt {
+	return []model.FieldExt{
+		{Field: PostActionArgsModel.Fields[1], Ref: "post", RefColumn: "id", OnDelete: ""},
+	}
 }
 
 type RequestChangesArgs struct {
@@ -516,6 +513,41 @@ func (m *RequestChangesArgs) Validate(action byte) error {
 	return model.ValidateFields(action, m)
 }
 
+var RequestChangesArgs_ = struct {
+	TenantId string
+	PostId string
+	ActorId string
+	Reason string
+}{
+	TenantId: "tenant_id",
+	PostId: "post_id",
+	ActorId: "actor_id",
+	Reason: "reason",
+}
+
+func ReadOneRequestChangesArgs(qb *orm.QB, model *RequestChangesArgs) (*RequestChangesArgs, error) {
+	err := qb.ReadOne()
+	if err != nil {
+		return nil, err
+	}
+	return model, nil
+}
+
+func ReadAllRequestChangesArgs(qb *orm.QB) (RequestChangesArgsList, error) {
+	var results RequestChangesArgsList
+	err := qb.ReadAll(
+		func() model.Model { return &RequestChangesArgs{} },
+		func(m model.Model) { results = append(results, m.(*RequestChangesArgs)) },
+	)
+	return results, err
+}
+
+func (m *RequestChangesArgs) SchemaExt() []model.FieldExt {
+	return []model.FieldExt{
+		{Field: RequestChangesArgsModel.Fields[1], Ref: "post", RefColumn: "id", OnDelete: ""},
+	}
+}
+
 type ListPublicationsArgs struct {
 	TenantId string
 	PostId string
@@ -555,6 +587,39 @@ func (m *ListPublicationsArgs) Validate(action byte) error {
 	return model.ValidateFields(action, m)
 }
 
+var ListPublicationsArgs_ = struct {
+	TenantId string
+	PostId string
+	Channel string
+}{
+	TenantId: "tenant_id",
+	PostId: "post_id",
+	Channel: "channel",
+}
+
+func ReadOneListPublicationsArgs(qb *orm.QB, model *ListPublicationsArgs) (*ListPublicationsArgs, error) {
+	err := qb.ReadOne()
+	if err != nil {
+		return nil, err
+	}
+	return model, nil
+}
+
+func ReadAllListPublicationsArgs(qb *orm.QB) (ListPublicationsArgsList, error) {
+	var results ListPublicationsArgsList
+	err := qb.ReadAll(
+		func() model.Model { return &ListPublicationsArgs{} },
+		func(m model.Model) { results = append(results, m.(*ListPublicationsArgs)) },
+	)
+	return results, err
+}
+
+func (m *ListPublicationsArgs) SchemaExt() []model.FieldExt {
+	return []model.FieldExt{
+		{Field: ListPublicationsArgsModel.Fields[1], Ref: "post", RefColumn: "id", OnDelete: ""},
+	}
+}
+
 type ListTransitionsArgs struct {
 	TenantId string
 	PostId string
@@ -591,3 +656,33 @@ func (m *ListTransitionsArgs) Validate(action byte) error {
 	return model.ValidateFields(action, m)
 }
 
+var ListTransitionsArgs_ = struct {
+	TenantId string
+	PostId string
+}{
+	TenantId: "tenant_id",
+	PostId: "post_id",
+}
+
+func ReadOneListTransitionsArgs(qb *orm.QB, model *ListTransitionsArgs) (*ListTransitionsArgs, error) {
+	err := qb.ReadOne()
+	if err != nil {
+		return nil, err
+	}
+	return model, nil
+}
+
+func ReadAllListTransitionsArgs(qb *orm.QB) (ListTransitionsArgsList, error) {
+	var results ListTransitionsArgsList
+	err := qb.ReadAll(
+		func() model.Model { return &ListTransitionsArgs{} },
+		func(m model.Model) { results = append(results, m.(*ListTransitionsArgs)) },
+	)
+	return results, err
+}
+
+func (m *ListTransitionsArgs) SchemaExt() []model.FieldExt {
+	return []model.FieldExt{
+		{Field: ListTransitionsArgsModel.Fields[1], Ref: "post", RefColumn: "id", OnDelete: ""},
+	}
+}

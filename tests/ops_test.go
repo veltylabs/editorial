@@ -2,6 +2,8 @@ package tests
 
 import (
 	"testing"
+	stdjson "encoding/json"
+
 
 	"github.com/veltylabs/editorial"
 	"webtyp.com/json"
@@ -35,16 +37,16 @@ func TestMountOperationsPermissions(t *testing.T) {
 		resource model.Resource
 		action   model.Action
 	}{
-		{editorial.OpListPosts, editorial.ResourcePost, model.Read},
-		{editorial.OpGetPost, editorial.ResourcePost, model.Read},
-		{editorial.OpUpsertPost, editorial.ResourcePost, model.Create | model.Update},
-		{editorial.OpDeletePost, editorial.ResourcePost, model.Delete},
-		{editorial.OpSubmitPost, editorial.ResourcePost, model.Update},
+		{editorial.OpListPosts, model.ResourceOf(&editorial.PostModel), model.Read},
+		{editorial.OpGetPost, model.ResourceOf(&editorial.PostModel), model.Read},
+		{editorial.OpUpsertPost, model.ResourceOf(&editorial.PostModel), model.Create | model.Update},
+		{editorial.OpDeletePost, model.ResourceOf(&editorial.PostModel), model.Delete},
+		{editorial.OpSubmitPost, model.ResourceOf(&editorial.PostModel), model.Update},
 		{editorial.OpApprovePost, editorial.ResourcePostReview, model.Update},
 		{editorial.OpRequestChanges, editorial.ResourcePostReview, model.Update},
 		{editorial.OpRetirePost, editorial.ResourcePostReview, model.Update},
-		{editorial.OpListPublications, editorial.ResourcePublication, model.Read},
-		{editorial.OpListTransitions, editorial.ResourcePost, model.Read},
+		{editorial.OpListPublications, model.ResourceOf(&editorial.PublicationModel), model.Read},
+		{editorial.OpListTransitions, model.ResourceOf(&editorial.PostModel), model.Read},
 	}
 
 	for _, exp := range expected {
@@ -101,31 +103,27 @@ func TestOpsConsumerLifecycle(t *testing.T) {
 	reviewer := "reviewer-ops"
 
 	// 1. Upsert Post
-	upsertArgs := &editorial.Post{
-		TenantId: tenant,
-		AuthorId: author,
-		Slug:     "ops-post",
-		Title:    "Ops Post Title",
-		Body:     "Ops Post Body Content",
-	}
-	ctx1 := makeOpCtx(author, upsertArgs)
+	ctx1 := makeOpCtx(author, nil)
+	ctx1.InBody = []byte("{\"records\":[{\"tenant_id\":\"" + tenant + "\",\"author_id\":\"" + author + "\",\"slug\":\"ops-post\",\"title\":\"Ops Post Title\",\"body\":\"Ops Post Body Content\"}]}")
 	r.Invoke("OP", "/"+editorial.OpUpsertPost, ctx1)
 	if ctx1.Status != 200 && ctx1.Status != 0 {
-		t.Fatalf("OpUpsertPost failed with status %d", ctx1.Status)
+		t.Fatalf("OpUpsertPost failed with status %d %s", ctx1.Status, string(ctx1.ResponseBody()))
 	}
+	// We must decode array of maps because it's a slice. Or via MountSave it encodes the returned record.
 
-	var created editorial.Post
-	if err := json.Decode(ctx1.ResponseBody(), &created); err != nil {
+	var responseData map[string]interface{}
+	if err := stdjson.Unmarshal(ctx1.ResponseBody(), &responseData); err != nil {
 		t.Fatalf("Decode response failed: %v", err)
 	}
-	if created.Id == "" {
-		t.Fatalf("expected created.Id to be set")
+	createdId, ok := responseData["id"].(string)
+	if !ok || createdId == "" {
+		t.Fatalf("expected createdId")
 	}
 
 	// 2. Submit Post
 	submitArgs := &editorial.PostActionArgs{
 		TenantId: tenant,
-		PostId:   created.Id,
+		PostId:   createdId,
 		ActorId:  author,
 	}
 	ctx2 := makeOpCtx(author, submitArgs)
@@ -137,7 +135,7 @@ func TestOpsConsumerLifecycle(t *testing.T) {
 	// 3. Approve Post
 	approveArgs := &editorial.PostActionArgs{
 		TenantId: tenant,
-		PostId:   created.Id,
+		PostId:   createdId,
 		ActorId:  reviewer,
 	}
 	ctx3 := makeOpCtx(reviewer, approveArgs)
@@ -149,7 +147,7 @@ func TestOpsConsumerLifecycle(t *testing.T) {
 	// 4. Get Post via Op
 	getArgs := &editorial.GetPostArgs{
 		TenantId: tenant,
-		Id:       created.Id,
+		Id:       createdId,
 	}
 	ctx4 := makeOpCtx(author, getArgs)
 	r.Invoke("OP", "/"+editorial.OpGetPost, ctx4)
