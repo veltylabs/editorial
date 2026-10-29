@@ -30,9 +30,9 @@ D22, D26, D27 of `veltylabs/mjosefa-cms/docs/MVP_DEPLOYMENT_ROADMAP.md`). Measur
 
 | Symbol | Exact | Tag |
 |---|---|---|
-| `view.MountSave` | `func MountSave[T any, PT interface{ *T; model.Model }](reg router.OperationRegistry, op string, save func(PT) error) router.Route` | view v0.6.53 |
-| `view.MountDelete` | `func MountDelete(reg router.OperationRegistry, op string, remove func(ids []string) error) router.Route` | view v0.6.53 |
-| `rpc.WriteError` | `func WriteError(ctx router.Context, err error)` — status from the error kind; a 500 never sends `err.Error()` | rpc v0.2.10 |
+| `view.MountSave` | `func MountSave[T any, PT interface{ *T; model.Model }](reg router.OperationRegistry, op string, save func(PT) error) router.Route` | view v0.6.55 |
+| `view.MountDelete` | `func MountDelete(reg router.OperationRegistry, op string, remove func(ids []string) error) router.Route` | view v0.6.55 |
+| `rpc.WriteError` | `func WriteError(ctx router.Context, err error)` — status from the error kind; a 500 never sends `err.Error()` | rpc v0.2.12 |
 | `model.ResourceOf` | `func ResourceOf(def *Definition) Resource` — the permission of a table (`""` if the definition has no PK) | model v0.2.12 |
 | `model.FeatureResource` | `func FeatureResource(name string) Resource` — a permission that is not a table; declare it once as a package `var` | model v0.2.12 |
 | `model.NotFound`, `model.Conflict`, `model.Invalid` | `type X string` with `Error()` and `Kind()`; `const ErrX model.NotFound = "…"` | model v0.2.12 |
@@ -45,7 +45,7 @@ D22, D26, D27 of `veltylabs/mjosefa-cms/docs/MVP_DEPLOYMENT_ROADMAP.md`). Measur
 go install webtyp.com/devflow/cmd/gotest@latest
 go install webtyp.com/lang/cmd/langc@latest
 go install webtyp.com/ormc/cmd/ormc@latest
-go get webtyp.com/view@v0.6.53 webtyp.com/rpc@v0.2.10 webtyp.com/model@v0.2.12
+go get webtyp.com/view@v0.6.55 webtyp.com/rpc@v0.2.12 webtyp.com/model@v0.2.12 webtyp.com/router@v0.4.16
 ```
 
 ## Stage 1 — errors
@@ -69,35 +69,83 @@ already equalled the table name). A permission that is not a table is declared o
 
 ## Stage 3 — save and delete of the screens
 
+1. In `editorial.go`, update `GetPost` to only filter `tenant_id` if non-empty (so `DeletePost("", id)` can find the post by ID):
+```go
+func (m *Module) GetPost(tenantId, id string) (*Post, error) {
+    if id == "" {
+        return nil, fmt.Err("editorial: GetPost requires an id")
+    }
+    post := &Post{}
+    q := m.db.Query(post)
+    if tenantId != "" {
+        q = q.Where("tenant_id").Eq(tenantId)
+    }
+    err := q.Where("id").Eq(id).ReadOne()
+    if err != nil {
+        if orm.IsNotFound(err) || storage.IsNoRows(err) {
+            return nil, ErrNotFound
+        }
+        return nil, err
+    }
+    return post, nil
+}
+```
+2. Mount save and delete:
 - `OpUpsertPost`: `view.MountSave(reg, OpUpsertPost, func(p *Post) error { out, err := m.UpsertPost(p.TenantId, p); if err == nil { *p = *out }; return err }).Requires(model.ResourceOf(&PostModel), model.Create|model.Update)`.
-- `OpDeletePost`: `view.MountDelete(reg, OpDeletePost, func(ids []string) error { for _, id := range ids { if err := m.DeletePost("", id); err != nil { return err } }; return nil }).Requires(model.ResourceOf(&PostModel), model.Delete)`. In `GetPost(tenantId, id string)`, only filter `Where("tenant_id").Eq(tenantId)` when `tenantId != ""`, and in `DeletePost(tenantId, id string)` use `post.TenantId` from `GetPost(tenantId, id)` for the delete filter.
-- Delete `DeletePostArgsModel` (regenerate `model_orm.go`).
+- `OpDeletePost`: `view.MountDelete(reg, OpDeletePost, func(ids []string) error { for _, id := range ids { if err := m.DeletePost("", id); err != nil { return err } }; return nil }).Requires(model.ResourceOf(&PostModel), model.Delete)`.
+3. Delete `DeletePostArgsModel` (regenerate `model_orm.go`).
 
 ## Stage 4 — records and foreign keys
 
 Declare `Ref: &XModel, DB: &model.FieldDB{RefColumn: "id"}` on every `*_id` column that points to a
-table of this module (keep `PK: true` where the column is part of the key), as
-`veltylabs/modules/agreement_manager/model.go:68` does; regenerate `model_orm.go` with the repo's
+table of this module (keep `PK: true` where the column is part of the key); regenerate `model_orm.go` with the repo's
 `ormc`. A column pointing to another module's table gets `Ref` only if `go.mod` already requires
 that module.
 
 ## Stage 5 — translations
 
-English keys only (grep `ui/` and the root for Spanish literals used as `lang.Text`, labels or
-input options; make them English keys). Fill `lang.json` with **real** translations for every
+English keys only. Fill `lang.json` with **real** translations for every
 language the file declares — never empty, never a placeholder. `langc sync .` → 0 pending, 0 reuse
 warnings, 0 identical values.
 
 ## Stage 6 — tests and demo
 
 - Update the tests that used deleted types or handlers.
-- New `tests/screen_save_test.go`: through `view.NewRecords().Caller(loopback.ActingAs(...))` and `view.NewCallerLister` with each presenter's `view.Ops`, save and delete one record per screen (`OpUpsertPost`, `OpDeletePost`): no error, row stored then gone; one duplicate/conflict case answers `model.KindOf(err) == model.ErrorConflict` on the client.
-- The demo opens with `webtyp` at the repo root; attach a screenshot of each screen to the PR.
+- New `tests/screen_save_test.go`:
+```go
+recs := view.NewRecords()
+caller := recs.Caller(loopback.ActingAs("tenant-1", "user-1", m))
+pres := editorial.NewView(caller)
+
+var saveErr error
+pres.(view.Saver).Save([]model.Model{&editorial.Post{
+    TenantId: "tenant-1",
+    Slug:     "test-article",
+    Title:    "Test Title",
+    Body:     "Test Body",
+    AuthorId: "user-1",
+}}, func(err error) { saveErr = err })
+if saveErr != nil {
+    t.Fatalf("save failed: %v", saveErr)
+}
+
+items := pres.Items()
+if len(items) == 0 {
+    t.Fatalf("expected saved post in presenter items")
+}
+id := items[0].ID
+
+var delErr error
+pres.(view.Deleter).Delete([]string{id}, func(err error) { delErr = err })
+if delErr != nil {
+    t.Fatalf("delete failed: %v", delErr)
+}
+```
+- Demo: `web/browser/main.go` using `storage/mem`, `loopback.ActingAs("demo", "user-1", m)`, and `editorialui.Screens(caller)`. Verify with `go build ./web/browser`. Do NOT attempt to install `webtyp` or take screenshots in headless CI; screenshots are reviewed locally upon pull.
 
 ## Stage 7 — docs (Spanish)
 
-`README.md`: errores por `rpc.WriteError`; permisos por tabla (`model.ResourceOf`); guardar/borrar con `view.MountSave`/`MountDelete`; claves
-foráneas declaradas.
+`README.md`: errores por `rpc.WriteError`; permisos por tabla (`model.ResourceOf`); guardar/borrar con `view.MountSave`/`MountDelete`; claves foráneas declaradas.
 
 ## Delivery check
 
@@ -106,19 +154,4 @@ GOPRIVATE=webtyp.com/*,github.com/veltylabs/* GOFLAGS=-mod=mod gotest
 ```
 
 - A PR that does not compile, or whose tests could not run, is a failed delivery.
-- Never pause to ask permission: when the check passes, commit, push and open the PR. Stuck 30
-  minutes: open the PR listing what fails.
-- `git diff --stat main` lists only files of this repo touched by the stages, `go.mod`, `go.sum`,
-  this plan. No stray scripts. No client domain in any example.
-
-## Stages
-
-| # | Files | Done when |
-|---|---|---|
-| 1 | errors, handlers | compiles |
-| 2 | ops, `ui/` | compiles |
-| 3 | ops | compiles |
-| 4 | `model.go`, `model_orm.go` | compiles |
-| 5 | `lang.json`, `ui/`, `model.go` | `langc sync .` clean |
-| 6 | `tests/*`, demo | suite green, screenshots in PR |
-| 7 | `README.md` | text present |
+- When the check passes, commit, push and open the PR immediately. Do not pause to ask questions.
