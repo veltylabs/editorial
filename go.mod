@@ -15,7 +15,7 @@ require (
 	webtyp.com/view v0.6.49
 )
 
-require webtyp.com/json v0.5.29
+require webtyp.com/json v0.5.37
 
 require (
 	webtyp.com/calendar v0.1.0 // indirect
