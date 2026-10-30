@@ -2,8 +2,10 @@
 PLAN: "fix: migrate with ddl.Sync so a new field reaches an existing table"
 EXECUTOR: jules
 REVIEWER: none
-STATUS: running
+STATUS: review
 SESSION: 5094707877844699093
+PR: https://github.com/veltylabs/editorial/pull/8
+REVIEWED_COMMIT: 1f34b71a885e794519cd8f92861e80ce8f3793ed
 ---
 
 > Read AGENTS.md at the repo root before any change.
