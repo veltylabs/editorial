@@ -1,69 +1,69 @@
-# Architecture — `veltylabs/editorial`
+# Arquitectura — `veltylabs/editorial`
 
-The **editorial** module manages authored clinical content, review workflows (human or machine agent), state machine transitions, and multi-channel publication logging.
+El módulo **editorial** gestiona el contenido redactado, los flujos de revisión (humana o automática), las transiciones de la máquina de estados y el registro de publicaciones multicanal.
 
-## Mission and Scope
+## Misión y Alcance
 
-This module handles:
-- **Posts (`Post`)**: Clinical articles, announcements, and educational pieces created by authors (physicians, dentists, physical therapists, etc.).
-- **State Machine (`State`)**: Explicit lifecycle transitions: `Draft` (0) -> `InReview` (1) -> `Approved` (3) / `ChangesRequested` (2) -> `Published` (4) -> `Retired` (5).
-- **Audit Ledger (`PostTransition`)**: Append-only log recording every state transition, the actor who triggered it, timestamps, and feedback/reasons when changes are requested.
-- **Publication Ledger (`Publication`)**: Idempotent registry recording multi-channel distribution (e.g. `web`, social networks) without coupling to channel delivery implementations.
+Este módulo se encarga de:
+- **Artículos (`Post`)**: Artículos clínicos, anuncios y material educativo creado por autores (médicos, dentistas, fisioterapeutas, etc.).
+- **Máquina de Estados (`State`)**: Transiciones de ciclo de vida explícitas: `Draft` (Borrador) (0) -> `InReview` (En revisión) (1) -> `Approved` (Aprobado) (3) / `ChangesRequested` (Cambios requeridos) (2) -> `Published` (Publicado) (4) -> `Retired` (Retirado) (5).
+- **Registro de Auditoría (`PostTransition`)**: Registro de solo adición que guarda cada transición de estado, el actor que la desencadenó, las marcas de tiempo y los motivos cuando se solicitan cambios.
+- **Registro de Publicaciones (`Publication`)**: Registro idempotente que guarda la distribución multicanal (ej. `web`, redes sociales) sin acoplarse a las implementaciones de entrega del canal.
 
-This module does **NOT**:
-- Deliver content to specific external platforms or run web servers.
-- Define channel interfaces or HTML renderers.
+Este módulo **NO** hace:
+- Entregar contenido a plataformas externas específicas o ejecutar servidores web.
+- Definir interfaces de canales o renderizadores HTML.
 
-## Domain Entities
+## Entidades del Dominio
 
 ### `Post`
-- `id` (PK)
-- `tenant_id` (NotNull)
-- `author_id` (NotNull, soft reference)
-- `slug` (NotNull, unique per tenant)
-- `title` (NotNull)
-- `excerpt` (optional summary)
-- `body` (NotNull, markdown)
-- `cover_image` (relative path)
-- `state` (Int, default 0 = `StateDraft`)
-- `published_at` (optional timestamp)
+- `id` (Clave primaria)
+- `tenant_id` (No nulo)
+- `author_id` (No nulo, referencia débil)
+- `slug` (No nulo, único por tenant)
+- `title` (No nulo)
+- `excerpt` (resumen opcional)
+- `body` (No nulo, markdown)
+- `cover_image` (ruta relativa)
+- `state` (Entero, por defecto 0 = `StateDraft`)
+- `published_at` (marca de tiempo opcional)
 - `created_at` / `updated_at`
 
-### `PostTransition` (Append-Only)
-- `id` (PK)
-- `tenant_id` (NotNull)
-- `post_id` (NotNull, foreign key to `Post`)
-- `from_state` / `to_state` (NotNull)
-- `actor_id` (NotNull)
-- `reason` (required when requesting changes)
-- `at` (NotNull, timestamp)
+### `PostTransition` (Solo adición)
+- `id` (Clave primaria)
+- `tenant_id` (No nulo)
+- `post_id` (No nulo, clave foránea a `Post`)
+- `from_state` / `to_state` (No nulo)
+- `actor_id` (No nulo)
+- `reason` (requerido al solicitar cambios)
+- `at` (No nulo, marca de tiempo)
 
 ### `Publication`
-- `id` (PK)
-- `tenant_id` (NotNull)
-- `post_id` (NotNull, foreign key to `Post`)
-- `channel` (NotNull, e.g. `web`)
-- `external_ref` (optional external channel reference ID)
-- `published_at` (NotNull, timestamp)
+- `id` (Clave primaria)
+- `tenant_id` (No nulo)
+- `post_id` (No nulo, clave foránea a `Post`)
+- `channel` (No nulo, ej. `web`)
+- `external_ref` (referencia externa opcional del canal)
+- `published_at` (No nulo, marca de tiempo)
 
-## Operations & RBAC Permissions
+## Operaciones y Permisos RBAC
 
-| Operation | Resource | Action | Description |
+| Operación | Recurso | Acción | Descripción |
 |---|---|---|---|
-| `list_posts` | `post` | `Read` | List posts with optional filters |
-| `get_post` | `post` | `Read` | Get post by ID |
-| `upsert_post` | `post` | `Create\|Update` | Create or update post content (cannot write `state`) |
-| `delete_post` | `post` | `Delete` | Delete post |
-| `submit_post` | `post` | `Update` | Submit draft or revised post for review |
-| `approve_post` | `post_review` | `Update` | Approve post for publication |
-| `request_changes` | `post_review` | `Update` | Request changes with required feedback |
-| `retire_post` | `post_review` | `Update` | Retire published post |
-| `list_publications` | `publication` | `Read` | Query publication ledger |
-| `list_transitions` | `post` | `Read` | Query state audit transitions for a post |
+| `list_posts` | `post` | `Read` | Lista artículos con filtros opcionales |
+| `get_post` | `post` | `Read` | Obtiene un artículo por ID |
+| `upsert_post` | `post` | `Create\|Update` | Crea o actualiza el contenido de un artículo (no puede modificar `state`) |
+| `delete_post` | `post` | `Delete` | Elimina un artículo |
+| `submit_post` | `post` | `Update` | Envía un borrador o artículo revisado para su revisión |
+| `approve_post` | `post_review` | `Update` | Aprueba un artículo para su publicación |
+| `request_changes` | `post_review` | `Update` | Solicita cambios con comentarios obligatorios |
+| `retire_post` | `post_review` | `Update` | Retira un artículo publicado |
+| `list_publications` | `publication` | `Read` | Consulta el registro de publicaciones |
+| `list_transitions` | `post` | `Read` | Consulta las transiciones de auditoría de estado de un artículo |
 
-Note: `approve_post`, `request_changes`, and `retire_post` require the distinct RBAC resource `post_review`, preventing authors with standard `post:cru` permissions from self-approving content.
+Nota: `approve_post`, `request_changes` y `retire_post` requieren el recurso de RBAC distinto `post_review`, impidiendo que autores con permisos `post:cru` estándar autoaprueben contenido.
 
-## Composition Root Example
+## Ejemplo de Raíz de Composición
 
 ```go
 package main
@@ -83,12 +83,16 @@ func main() {
 		Publisher: eventPublisher,
 	}
 
+	// La función New migra las tablas del módulo llamando a editorial.Migrate,
+	// el cual usa ddl.Sync. Esto asegura que si se añaden columnas a un modelo,
+	// la base de datos instalada se actualiza correctamente.
+	// Flujo de sincronización: https://github.com/webtyp/ddl/blob/main/docs/diagrams/SYNC_FLOW.md
 	module, err := editorial.New(db, deps)
 	if err != nil {
 		panic(err)
 	}
 
-	// Mount operations onto transport router
+	// Montar las operaciones en el enrutador de transporte
 	module.MountOps(router)
 }
 ```

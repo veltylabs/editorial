@@ -10,10 +10,10 @@ import (
 	"webtyp.com/time"
 )
 
-// domainError is the concrete type of this package's sentinel errors. Code
-// compares them by asserting this type and comparing the value: == between two
-// error values compiles, under TinyGo, to runtime.interfaceEqual, which pulls
-// internal/reflectlite into the wasm binary.
+// domainError es el tipo concreto de los errores centinela de este paquete.
+// El código los compara afirmando este tipo y comparando el valor: el uso de == entre
+// dos valores de error se compila, bajo TinyGo, a runtime.interfaceEqual, lo que incluye
+// internal/reflectlite en el binario de wasm.
 
 
 
@@ -49,15 +49,8 @@ func New(db *orm.DB, deps Deps) (*Module, error) {
 		deps: deps,
 	}
 
-	if ddlCompiler, ok := db.RawConn().(ddl.Compiler); ok {
-		d := ddl.New(db.RawConn(), ddlCompiler)
-		if err := d.CreateTable(&Post{}); err != nil {
-			return nil, err
-		}
-		if err := d.CreateTable(&PostTransition{}); err != nil {
-			return nil, err
-		}
-		if err := d.CreateTable(&Publication{}); err != nil {
+	if c, ok := db.RawConn().(ddl.Compiler); ok {
+		if err := Migrate(db.RawConn(), c); err != nil {
 			return nil, err
 		}
 	}

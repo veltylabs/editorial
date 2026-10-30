@@ -9,9 +9,11 @@ import (
 const titlePosts = "Posts"
 const searchPlaceholderPosts = "Search posts..."
 
-// NewView builds the posts Presenter — the tech-agnostic engine a renderer
-// (crudview, or any other) wraps. This module builds it (view + model + router
-// only); the app decides which renderer draws it.
+// NewView construye el Presenter de artículos — el motor independiente de la tecnología
+// que envuelve un renderizador (crudview, o cualquier otro). Este módulo lo construye
+// (solo view + model + router); la aplicación decide qué renderizador lo dibuja.
+//
+// Ejemplo: presenter := editorial.NewView(caller)
 func NewView(caller router.Caller) view.Presenter {
 	b := view.NewCallerLister(view.NewRecords().Caller(caller),
 		view.Ops{Module: ModelName, List: OpListPosts, Save: OpUpsertPost, Delete: OpDeletePost},
