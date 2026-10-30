@@ -1,9 +1,9 @@
-# Database ERD
+# ERD de Base de Datos
 
 ```mermaid
 erDiagram
-    Post ||--o{ PostTransition : "has audit transitions"
-    Post ||--o{ Publication : "has publication records"
+    Post ||--o{ PostTransition : "tiene transiciones de auditoría"
+    Post ||--o{ Publication : "tiene registros de publicación"
 
     Post {
         string id PK

@@ -9,10 +9,10 @@ import (
 
 var _ router.OperationModule = (*Module)(nil)
 
-// ModelName is this module's identity: mcp.HarvestOps qualifies every op
-// below as "editorial.<name>" on the wire, and view.go's NewView passes this
-// same constant as view.Ops.Module so the client composes the identical
-// qualified name.
+// ModelName es la identidad de este módulo: mcp.HarvestOps califica cada operación
+// a continuación como "editorial.<name>" en la red, y NewView en view.go pasa esta
+// misma constante como view.Ops.Module para que el cliente componga el mismo nombre
+// calificado idéntico.
 const ModelName = "editorial"
 
 var ResourcePostReview = model.FeatureResource("post_review")
