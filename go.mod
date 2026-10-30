@@ -3,7 +3,7 @@ module github.com/veltylabs/editorial
 go 1.26.8
 
 require (
-	webtyp.com/ddl v0.0.36
+	webtyp.com/ddl v0.0.37
 	webtyp.com/events v0.1.0
 	webtyp.com/fmt v1.0.0
 	webtyp.com/input v0.0.20
