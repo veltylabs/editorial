@@ -32,6 +32,7 @@ func setupModule(t *testing.T) (*editorial.Module, *fakePublisher) {
 	db := orm.New(mem.New())
 	pub := &fakePublisher{}
 	deps := editorial.Deps{
+		TenantID: "tenant-a",
 		IDs:       &fakeIDGen{},
 		Publisher: pub,
 	}

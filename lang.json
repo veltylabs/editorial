@@ -7,20 +7,26 @@
     "Excerpt": ["Extracto", "", "", "", "", "", "", ""],
     "Page address": ["Dirección de página", "", "", "", "", "", "", ""],
     "Posts": ["Publicaciones", "fake", "fake", "fake", "fake", "fake", "fake", "fake"],
+    "Reason": ["Reason", "", "", "", "", "", "", ""],
     "Search posts...": ["Buscar publicaciones...", "fake", "fake", "fake", "fake", "fake", "fake", "fake"],
     "Title": ["Título", "", "", "", "", "", "", ""],
     "actor id": ["id de autor", "", "", "", "", "", "", ""],
     "at": ["en", "", "", "", "", "", "", ""],
     "author id": ["id de creador", "", "", "", "", "", "", ""],
     "channel": ["canal", "", "", "", "", "", "", ""],
+    "created at": ["created at", "", "", "", "", "", "", ""],
     "editorial: IDs generator is required": ["editorial: el generador de IDs es requerido", "", "", "", "", "", "", ""],
     "editorial: post cannot be nil": ["editorial: la publicación no puede ser nula", "", "", "", "", "", "", ""],
     "external ref": ["referencia externa", "", "", "", "", "", "", ""],
     "from state": ["desde estado", "", "", "", "", "", "", ""],
     "has state filter": ["tiene filtro de estado", "", "", "", "", "", "", ""],
+    "limit": ["limit", "", "", "", "", "", "", ""],
+    "offset": ["offset", "", "", "", "", "", "", ""],
     "post id": ["id de publicación", "", "", "", "", "", "", ""],
     "published at": ["publicado en", "", "", "", "", "", "", ""],
     "state": ["estado", "", "", "", "", "", "", ""],
-    "to state": ["hacia estado", "", "", "", "", "", "", ""]
+    "tenant id": ["tenant id", "", "", "", "", "", "", ""],
+    "to state": ["hacia estado", "", "", "", "", "", "", ""],
+    "updated at": ["updated at", "", "", "", "", "", "", ""]
   }
 }

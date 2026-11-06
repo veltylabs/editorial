@@ -31,11 +31,13 @@ const (
 )
 
 type Deps struct {
+	TenantID  string
 	IDs       model.IDGenerator
 	Publisher events.Publisher
 }
 
 type Module struct {
+	tenantID string
 	db   *orm.DB
 	deps Deps
 }
@@ -45,6 +47,7 @@ func New(db *orm.DB, deps Deps) (*Module, error) {
 		return nil, fmt.Err("editorial: IDs generator is required")
 	}
 	m := &Module{
+		tenantID: deps.TenantID,
 		db:   db,
 		deps: deps,
 	}
@@ -356,6 +359,28 @@ func (m *Module) ListPublications(args *ListPublicationsArgs) (PublicationList, 
 	err := qb.ReadAll(
 		func() model.Model { return &Publication{} },
 		func(rec model.Model) { list = append(list, rec.(*Publication)) },
+	)
+	if err != nil && !orm.IsNotFound(err) && !storage.IsNoRows(err) {
+		return nil, err
+	}
+	return list, nil
+}
+
+func (m *Module) listPostsView(search, after string, limit int64) (PostList, error) {
+	var p Post
+	qb := m.db.Query(&p).Where("tenant_id").Eq(m.tenantID)
+	if search != "" {
+		qb = qb.Where("title").Like("%" + search + "%")
+	}
+	if after != "" {
+		qb = qb.Where("id").Gt(after)
+	}
+	qb = qb.OrderBy("id").Asc().Limit(int(limit))
+
+	var list PostList
+	err := qb.ReadAll(
+		func() model.Model { return &Post{} },
+		func(rec model.Model) { list = append(list, rec.(*Post)) },
 	)
 	if err != nil && !orm.IsNotFound(err) && !storage.IsNoRows(err) {
 		return nil, err

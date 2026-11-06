@@ -16,7 +16,7 @@ const searchPlaceholderPosts = "Search posts..."
 // Ejemplo: presenter := editorial.NewView(caller)
 func NewView(caller router.Caller) view.Presenter {
 	b := view.NewCallerLister(view.NewRecords().Caller(caller),
-		view.Ops{Module: ModelName, List: OpListPosts, Save: OpUpsertPost, Delete: OpDeletePost},
+		view.Ops{Module: ModelName, List: OpListPosts, Save: OpUpsertPost, Delete: OpDeletePost, Page: view.Page{First: 50, Size: 50, More: true}},
 		func() model.ModelSlice { return &PostList{} })
 	return view.New(b, &Post{},
 		view.WithTitle(titlePosts),

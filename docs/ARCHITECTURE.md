@@ -50,7 +50,7 @@ Este módulo **NO** hace:
 
 | Operación | Recurso | Acción | Descripción |
 |---|---|---|---|
-| `list_posts` | `post` | `Read` | Lista artículos con filtros opcionales |
+| `list_posts` | `post` | `Read` | Lista artículos paginados como declara su `view.Page` (`50` en este caso) con búsqueda en el servidor |
 | `get_post` | `post` | `Read` | Obtiene un artículo por ID |
 | `upsert_post` | `post` | `Create\|Update` | Crea o actualiza el contenido de un artículo (no puede modificar `state`) |
 | `delete_post` | `post` | `Delete` | Elimina un artículo |
