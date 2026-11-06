@@ -12,12 +12,12 @@ require (
 	webtyp.com/router v0.4.17
 	webtyp.com/storage v0.1.18
 	webtyp.com/time v0.6.4
-	webtyp.com/view v0.6.53
+	webtyp.com/view v0.6.63
 )
 
 require (
 	webtyp.com/json v0.5.37
-	webtyp.com/rpc v0.2.7
+	webtyp.com/rpc v0.2.14
 )
 
 require (
