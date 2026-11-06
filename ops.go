@@ -36,22 +36,18 @@ func (m *Module) ModelName() string {
 
 func (m *Module) MountOperations(reg router.OperationRegistry) {
 	reg.Operation(OpListPosts, func(ctx router.Context) {
-		var args ListPostsArgs
+		var args view.ListArgs
 		if err := ctx.Decode(&args); err != nil {
 			rpc.WriteError(ctx, ErrCannotRead)
 			return
 		}
-		if err := args.Validate(model.ActionRead); err != nil {
-			rpc.WriteError(ctx, ErrCannotRead)
-			return
-		}
-		list, err := m.ListPosts(&args)
+		list, err := m.listPostsView(args.Search, args.After, view.Cap(args.Limit))
 		if err != nil {
 			rpc.WriteError(ctx, err)
 			return
 		}
 		ctx.Encode(&list)
-	}).Requires(model.ResourceOf(&PostModel), model.Read).Accepts(&ListPostsArgs{})
+	}).Requires(model.ResourceOf(&PostModel), model.Read).Accepts(&view.ListArgs{})
 
 	reg.Operation(OpGetPost, func(ctx router.Context) {
 		var args GetPostArgs

@@ -11,11 +11,13 @@ import (
 	"webtyp.com/orm"
 	"webtyp.com/router/mock"
 	"webtyp.com/storage/mem"
+	"webtyp.com/view"
 )
 
 func TestMountOperationsPermissions(t *testing.T) {
 	db := orm.New(mem.New())
 	deps := editorial.Deps{
+		TenantID: "tenant-ops",
 		IDs: &fakeIDGen{},
 	}
 	m, err := editorial.New(db, deps)
@@ -83,6 +85,7 @@ func makeOpCtx(userID string, payload model.Encodable) *mock.Context {
 func TestOpsConsumerLifecycle(t *testing.T) {
 	db := orm.New(mem.New())
 	deps := editorial.Deps{
+		TenantID: "tenant-ops",
 		IDs: &fakeIDGen{},
 	}
 	m, err := editorial.New(db, deps)
@@ -161,5 +164,68 @@ func TestOpsConsumerLifecycle(t *testing.T) {
 	}
 	if fetched.State != int64(editorial.StateApproved) {
 		t.Errorf("expected state Approved, got %d", fetched.State)
+	}
+}
+
+func TestEditorial_ListAcceptsListArgs(t *testing.T) {
+	db := orm.New(mem.New())
+	deps := editorial.Deps{
+		IDs: &fakeIDGen{},
+		TenantID: "tenant-list-args",
+	}
+	m, err := editorial.New(db, deps)
+	if err != nil {
+		t.Fatalf("editorial.New failed: %v", err)
+	}
+
+	r := &mock.Router{}
+	r.Configure(mock.Config{
+		Authorize: func(userID string, res model.Resource, act model.Action) bool {
+			return true
+		},
+	})
+	m.MountOperations(r)
+
+	// Seed one row
+	seeded, err := m.UpsertPost("tenant-list-args", &editorial.Post{
+		AuthorId: "author1",
+		Slug:     "test-slug",
+		Title:    "Seeded Post",
+		Body:     "Body with minimum length",
+	})
+	if err != nil {
+		t.Fatalf("failed to seed post: %v", err)
+	}
+
+	// 1) call the list operation with &view.ListArgs{Limit: 1} → exactly 1 row
+	ctx1 := makeOpCtx("user", &view.ListArgs{Limit: 1})
+	r.Invoke("OP", "/"+editorial.OpListPosts, ctx1)
+	if ctx1.Status != 200 && ctx1.Status != 0 {
+		t.Fatalf("expected 200, got %d", ctx1.Status)
+	}
+	var res1 []map[string]any
+	if err := stdjson.Unmarshal(ctx1.ResponseBody(), &res1); err != nil {
+		t.Fatalf("decode failed: %v", err)
+	}
+	if len(res1) != 1 {
+		t.Errorf("expected 1 row, got %d", len(res1))
+	}
+
+	// 2) with Search: "<label>"
+	ctx2 := makeOpCtx("user", &view.ListArgs{Search: "Seeded Post"})
+	r.Invoke("OP", "/"+editorial.OpListPosts, ctx2)
+	var res2 []map[string]any
+	_ = stdjson.Unmarshal(ctx2.ResponseBody(), &res2)
+	if len(res2) != 1 || res2[0]["id"] != seeded.Id {
+		t.Errorf("expected to find seeded post")
+	}
+
+	// 3) with After: <id> → not in result
+	ctx3 := makeOpCtx("user", &view.ListArgs{After: seeded.Id})
+	r.Invoke("OP", "/"+editorial.OpListPosts, ctx3)
+	var res3 []map[string]any
+	_ = stdjson.Unmarshal(ctx3.ResponseBody(), &res3)
+	if len(res3) != 0 {
+		t.Errorf("expected 0 rows after first row, got %d", len(res3))
 	}
 }
