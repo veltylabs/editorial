@@ -16,7 +16,7 @@ require (
 )
 
 require (
-	webtyp.com/json v0.5.37
+	webtyp.com/json v0.5.40
 	webtyp.com/rpc v0.2.14
 )
 
