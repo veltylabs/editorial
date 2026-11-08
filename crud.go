@@ -60,13 +60,14 @@ func (m *Module) UpdatePost(c crud.Caller, ids, fields []string, rec Post) error
 				targetState := State(rec.State)
 				currentState := State(existing.State)
 
-				if targetState == StateInReview {
+				switch targetState {
+				case StateInReview:
 					if currentState != StateDraft {
 						return &model.FieldError{Field: "state", Err: ErrInvalidTransition}
 					}
-				} else if targetState == StateRetired {
-					// allowed from anywhere based on instructions "* -> Retired"
-				} else {
+				case StateRetired:
+					// permitido desde cualquier estado: "* -> Retired"
+				default:
 					return &model.FieldError{Field: "state", Err: ErrInvalidTransition}
 				}
 
@@ -139,13 +140,14 @@ func (m *Module) CreatePostTransition(c crud.Caller, list PostTransitionList) er
 				return &model.FieldError{Field: "to_state", Err: ErrInvalidTransition}
 			}
 
-			if targetState == StateApproved {
-				// allowed
-			} else if targetState == StateChangesRequested {
+			switch targetState {
+			case StateApproved:
+				// permitido
+			case StateChangesRequested:
 				if t.Reason == "" {
 					return &model.FieldError{Field: "reason", Err: ErrReasonRequired}
 				}
-			} else {
+			default:
 				return &model.FieldError{Field: "to_state", Err: ErrInvalidTransition}
 			}
 
