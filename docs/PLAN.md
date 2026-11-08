@@ -2,8 +2,10 @@
 PLAN: "refactor!: editorial on the closed crud contract — server tenant, transactional batch, single declarative validation, view.go browser-only"
 EXECUTOR: jules
 REVIEWER: none
-STATUS: running
+STATUS: review
 SESSION: 7528414469419124488
+PR: https://github.com/veltylabs/editorial/pull/10
+REVIEWED_COMMIT: 78660195dd9516368ffcf8633bcd8e930f525c78
 ---
 
 > Read AGENTS.md at the repo root before any change.
