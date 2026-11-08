@@ -5,7 +5,7 @@ REVIEWER: none
 STATUS: review
 SESSION: 7528414469419124488
 PR: https://github.com/veltylabs/editorial/pull/10
-REVIEWED_COMMIT: 78660195dd9516368ffcf8633bcd8e930f525c78
+REVIEWED_COMMIT: a17ebc9f7fb5a07369b8eb64fc6d4db385d7ad48
 ---
 
 > Read AGENTS.md at the repo root before any change.
