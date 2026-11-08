@@ -1,13 +1,11 @@
 package editorial
 
 import (
+	"webtyp.com/crud"
 	"webtyp.com/model"
-	"webtyp.com/router"
-	"webtyp.com/rpc"
-	"webtyp.com/view"
 )
 
-var _ router.OperationModule = (*Module)(nil)
+var _ crud.Module = (*Module)(nil)
 
 // ModelName es la identidad de este módulo: mcp.HarvestOps califica cada operación
 // a continuación como "editorial.<name>" en la red, y NewView en view.go pasa esta
@@ -15,176 +13,23 @@ var _ router.OperationModule = (*Module)(nil)
 // calificado idéntico.
 const ModelName = "editorial"
 
-var ResourcePostReview = model.FeatureResource("post_review")
-
-const (
-	OpListPosts        = "list_posts"
-	OpGetPost          = "get_post"
-	OpUpsertPost       = "upsert_post"
-	OpDeletePost       = "delete_post"
-	OpSubmitPost       = "submit_post"
-	OpApprovePost      = "approve_post"
-	OpRequestChanges   = "request_changes"
-	OpRetirePost       = "retire_post"
-	OpListPublications = "list_publications"
-	OpListTransitions  = "list_transitions"
-)
-
 func (m *Module) ModelName() string {
 	return ModelName
 }
 
-func (m *Module) MountOperations(reg router.OperationRegistry) {
-	reg.Operation(OpListPosts, func(ctx router.Context) {
-		var args view.ListArgs
-		if err := ctx.Decode(&args); err != nil {
-			rpc.WriteError(ctx, ErrCannotRead)
-			return
-		}
-		list, err := m.listPostsView(args.Search, args.After, view.Cap(args.Limit))
-		if err != nil {
-			rpc.WriteError(ctx, err)
-			return
-		}
-		ctx.Encode(&list)
-	}).Requires(model.ResourceOf(&PostModel), model.Read).Accepts(&view.ListArgs{})
+func (m *Module) MountOperations(reg crud.Registry) {
+	MountPostRead(reg, func() model.Model { return &Post{} }, m.ReadPost)
+	MountPostCreate(reg, m.CreatePost)
+	MountPostUpdate(reg, m.UpdatePost)
+	MountPostDelete(reg, m.DeletePost)
 
-	reg.Operation(OpGetPost, func(ctx router.Context) {
-		var args GetPostArgs
-		if err := ctx.Decode(&args); err != nil {
-			rpc.WriteError(ctx, ErrCannotRead)
-			return
-		}
-		if err := args.Validate(model.ActionRead); err != nil {
-			rpc.WriteError(ctx, ErrCannotRead)
-			return
-		}
-		post, err := m.GetPost(args.TenantId, args.Id)
-		if err != nil {
-			rpc.WriteError(ctx, err)
-			return
-		}
-		ctx.Encode(post)
-	}).Requires(model.ResourceOf(&PostModel), model.Read).Accepts(&GetPostArgs{})
+	MountPostTransitionRead(reg, func() model.Model { return &PostTransition{} }, m.ReadPostTransition)
+	MountPostTransitionCreate(reg, m.CreatePostTransition)
+	MountPostTransitionUpdate(reg, m.UpdatePostTransition)
+	MountPostTransitionDelete(reg, m.DeletePostTransition)
 
-	view.MountSave(reg, OpUpsertPost, func(p *Post) error {
-		out, err := m.UpsertPost(p.TenantId, p)
-		if err == nil {
-			*p = *out
-		}
-		return err
-	}).Requires(model.ResourceOf(&PostModel), model.Create|model.Update)
-
-	view.MountDelete(reg, OpDeletePost, func(ids []string) error {
-		for _, id := range ids {
-			if err := m.DeletePost("", id); err != nil {
-				return err
-			}
-		}
-		return nil
-	}).Requires(model.ResourceOf(&PostModel), model.Delete)
-
-	reg.Operation(OpSubmitPost, func(ctx router.Context) {
-		var args PostActionArgs
-		if err := ctx.Decode(&args); err != nil {
-			rpc.WriteError(ctx, ErrCannotRead)
-			return
-		}
-		if err := args.Validate(model.ActionUpdate); err != nil {
-			rpc.WriteError(ctx, ErrCannotRead)
-			return
-		}
-		if err := m.Submit(args.TenantId, args.PostId, args.ActorId); err != nil {
-			rpc.WriteError(ctx, err)
-			return
-		}
-		ctx.WriteStatus(200)
-	}).Requires(model.ResourceOf(&PostModel), model.Update).Accepts(&PostActionArgs{})
-
-	reg.Operation(OpApprovePost, func(ctx router.Context) {
-		var args PostActionArgs
-		if err := ctx.Decode(&args); err != nil {
-			rpc.WriteError(ctx, ErrCannotRead)
-			return
-		}
-		if err := args.Validate(model.ActionUpdate); err != nil {
-			rpc.WriteError(ctx, ErrCannotRead)
-			return
-		}
-		if err := m.Approve(args.TenantId, args.PostId, args.ActorId); err != nil {
-			rpc.WriteError(ctx, err)
-			return
-		}
-		ctx.WriteStatus(200)
-	}).Requires(ResourcePostReview, model.Update).Accepts(&PostActionArgs{})
-
-	reg.Operation(OpRequestChanges, func(ctx router.Context) {
-		var args RequestChangesArgs
-		if err := ctx.Decode(&args); err != nil {
-			rpc.WriteError(ctx, ErrCannotRead)
-			return
-		}
-		if err := args.Validate(model.ActionUpdate); err != nil {
-			rpc.WriteError(ctx, ErrCannotRead)
-			return
-		}
-		if err := m.RequestChanges(args.TenantId, args.PostId, args.ActorId, args.Reason); err != nil {
-			rpc.WriteError(ctx, err)
-			return
-		}
-		ctx.WriteStatus(200)
-	}).Requires(ResourcePostReview, model.Update).Accepts(&RequestChangesArgs{})
-
-	reg.Operation(OpRetirePost, func(ctx router.Context) {
-		var args PostActionArgs
-		if err := ctx.Decode(&args); err != nil {
-			rpc.WriteError(ctx, ErrCannotRead)
-			return
-		}
-		if err := args.Validate(model.ActionUpdate); err != nil {
-			rpc.WriteError(ctx, ErrCannotRead)
-			return
-		}
-		if err := m.Retire(args.TenantId, args.PostId, args.ActorId); err != nil {
-			rpc.WriteError(ctx, err)
-			return
-		}
-		ctx.WriteStatus(200)
-	}).Requires(ResourcePostReview, model.Update).Accepts(&PostActionArgs{})
-
-	reg.Operation(OpListPublications, func(ctx router.Context) {
-		var args ListPublicationsArgs
-		if err := ctx.Decode(&args); err != nil {
-			rpc.WriteError(ctx, ErrCannotRead)
-			return
-		}
-		if err := args.Validate(model.ActionRead); err != nil {
-			rpc.WriteError(ctx, ErrCannotRead)
-			return
-		}
-		pubs, err := m.ListPublications(&args)
-		if err != nil {
-			rpc.WriteError(ctx, err)
-			return
-		}
-		ctx.Encode(&pubs)
-	}).Requires(model.ResourceOf(&PublicationModel), model.Read).Accepts(&ListPublicationsArgs{})
-
-	reg.Operation(OpListTransitions, func(ctx router.Context) {
-		var args ListTransitionsArgs
-		if err := ctx.Decode(&args); err != nil {
-			rpc.WriteError(ctx, ErrCannotRead)
-			return
-		}
-		if err := args.Validate(model.ActionRead); err != nil {
-			rpc.WriteError(ctx, ErrCannotRead)
-			return
-		}
-		trans, err := m.ListTransitions(&args)
-		if err != nil {
-			rpc.WriteError(ctx, err)
-			return
-		}
-		ctx.Encode(&trans)
-	}).Requires(model.ResourceOf(&PostModel), model.Read).Accepts(&ListTransitionsArgs{})
+	MountPublicationRead(reg, func() model.Model { return &Publication{} }, m.ReadPublication)
+	MountPublicationCreate(reg, m.CreatePublication)
+	MountPublicationUpdate(reg, m.UpdatePublication)
+	MountPublicationDelete(reg, m.DeletePublication)
 }
