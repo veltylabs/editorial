@@ -2,8 +2,10 @@
 PLAN: "refactor!: editorial on the crud-by-declaration framework — Allow and Rules in definition.go, persistence by crud, only domain rules in rule files"
 EXECUTOR: jules
 REVIEWER: none
-STATUS: running
+STATUS: review
 SESSION: 2724580006953222926
+PR: https://github.com/veltylabs/editorial/pull/11
+REVIEWED_COMMIT: 69ff28a0381c8bdb3b79e5f6622f2ae292e23209
 ---
 
 > Read AGENTS.md at the repo root before any change.
