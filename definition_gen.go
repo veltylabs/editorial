@@ -5,6 +5,8 @@ package editorial
 import (
 	"webtyp.com/model"
 	"webtyp.com/orm"
+	"webtyp.com/crud"
+	"webtyp.com/storage"
 	"webtyp.com/time"
 )
 
@@ -73,6 +75,9 @@ func (s *PostList) DecodeFields(_ model.FieldReader) {}
 func (m *Post) Validate(action byte) error {
 	return model.ValidateFields(action, m)
 }
+
+func (*Post) Allow() model.Action     { return PostModel.Allow }
+func (*PostList) Allow() model.Action { return PostModel.Allow }
 
 func (m *Post) Item() model.Item {
 	return model.Item{ID: m.Id, Label: m.Title, Description: m.Slug}
@@ -177,6 +182,9 @@ func (m *PostTransition) Validate(action byte) error {
 	return model.ValidateFields(action, m)
 }
 
+func (*PostTransition) Allow() model.Action     { return PostTransitionModel.Allow }
+func (*PostTransitionList) Allow() model.Action { return PostTransitionModel.Allow }
+
 func (m *PostTransition) Item() model.Item {
 	return model.Item{ID: m.Id, Label: m.ActorId, Description: m.Reason}
 }
@@ -272,6 +280,9 @@ func (m *Publication) Validate(action byte) error {
 	return model.ValidateFields(action, m)
 }
 
+func (*Publication) Allow() model.Action     { return PublicationModel.Allow }
+func (*PublicationList) Allow() model.Action { return PublicationModel.Allow }
+
 func (m *Publication) Item() model.Item {
 	return model.Item{ID: m.Id, Label: m.Channel, Description: m.ExternalRef}
 }
@@ -315,3 +326,47 @@ func (m *Publication) SchemaExt() []model.FieldExt {
 	}
 }
 
+// ModelName is the module identity: Definition.Name.
+const ModelName = "editorial"
+
+func (m *Module) ModelName() string { return ModelName }
+
+// Definition is the module's declaration (definition.go); crud.Mount compares it with what MountOperations mounted.
+func (m *Module) Definition() model.ModuleDefinition { return Definition }
+
+// MountOperations offers every entity of the module: the actions its model allows, with crud's validation and the rules written in rule_*.go.
+func (m *Module) MountOperations(reg crud.Registry) {
+	reg.AddStoredEntity(crud.StoredEntity{
+		Model: &Post{},
+		NewList: func() model.ModelSlice { return &PostList{} },
+		Store: m.StorePost(),
+		Rules: PostModel.Rules,
+		MFA: PostModel.MFA,
+		Create: func(a crud.CurrentUser, tx crud.Tx, rec model.Model) (crud.RuleAnswer, error) {
+			return rec.(*Post).Create(a, tx, m)
+		},
+		Update: func(a crud.CurrentUser, tx crud.Tx, old, next model.Model, fields []string) (crud.RuleAnswer, error) {
+			return next.(*Post).Update(a, tx, old.(*Post), fields, m)
+		},
+		Search: func(a crud.CurrentUser, filter model.Model, text string) ([]storage.Condition, error) {
+			return (&Post{}).Search(a, filter.(*Post), text, m)
+		},
+	})
+	reg.AddStoredEntity(crud.StoredEntity{
+		Model: &PostTransition{},
+		NewList: func() model.ModelSlice { return &PostTransitionList{} },
+		Store: m.StorePostTransition(),
+		Rules: PostTransitionModel.Rules,
+		MFA: PostTransitionModel.MFA,
+		Create: func(a crud.CurrentUser, tx crud.Tx, rec model.Model) (crud.RuleAnswer, error) {
+			return rec.(*PostTransition).Create(a, tx, m)
+		},
+	})
+	reg.AddStoredEntity(crud.StoredEntity{
+		Model: &Publication{},
+		NewList: func() model.ModelSlice { return &PublicationList{} },
+		Store: m.StorePublication(),
+		Rules: PublicationModel.Rules,
+		MFA: PublicationModel.MFA,
+	})
+}

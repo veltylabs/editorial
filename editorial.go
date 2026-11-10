@@ -6,7 +6,6 @@ import (
 	"webtyp.com/fmt"
 	"webtyp.com/model"
 	"webtyp.com/orm"
-	"webtyp.com/storage"
 )
 
 // domainError es el tipo concreto de los errores centinela de este paquete.
@@ -39,6 +38,7 @@ type Module struct {
 	tenantID string
 	db   *orm.DB
 	deps Deps
+	store *orm.Store
 }
 
 func New(db *orm.DB, deps Deps) (*Module, error) {
@@ -49,6 +49,7 @@ func New(db *orm.DB, deps Deps) (*Module, error) {
 		tenantID: deps.TenantID,
 		db:   db,
 		deps: deps,
+		store: orm.TenantStore(db, deps.TenantID, deps.IDs),
 	}
 
 	if c, ok := db.RawConn().(ddl.Compiler); ok {
@@ -73,17 +74,3 @@ func New(db *orm.DB, deps Deps) (*Module, error) {
 
 
 
-func (m *Module) getPost(id string) (*Post, error) {
-	post := &Post{}
-	err := m.db.Query(post).
-		Where("tenant_id").Eq(m.tenantID).
-		Where("id").Eq(id).
-		ReadOne()
-	if err != nil {
-		if orm.IsNotFound(err) || storage.IsNoRows(err) {
-			return nil, ErrNotFound
-		}
-		return nil, err
-	}
-	return post, nil
-}

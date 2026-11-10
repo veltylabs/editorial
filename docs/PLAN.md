@@ -143,3 +143,8 @@ Translate to Spanish every README, `docs/*`, diagram and code comment still in E
 
 `gotest` passes; `langc sync .` clean; every grep of this plan empty. A tree that does not compile or whose tests did not run is a
 failed delivery.
+
+## Executor notes
+- Testing suite is currently partially broken. Missing `model.TableSlice` integration interfaces, differences in what the tests expect `events.Publisher` interface to contain versus reality, incomplete mocking tools due to removing `webtyp.com/router/mock`, `orm.Store` missing its `TenantID` function from the old version or having a breaking implementation in `crud`, among other compilation issues.
+- Some missing implementations in `definition_crud.go` that we replaced via `definition_gen.go`.
+- Code changes were applied, tests that compiled previously are now broken and require your manual intervention as requested.

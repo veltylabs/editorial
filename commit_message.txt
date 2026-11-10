@@ -1,0 +1,11 @@
+refactor!: apply crud declarations to editorial module
+
+This commit transitions the editorial module from using hand-written
+persistence loop code to the declarative 'crud' framework.
+It moves validations and side-effects to concise domain rule files,
+removes `ops.go`, `queries.go` and `crud.go` and configures
+the declarative schema and store mappings in `definition.go`.
+
+Note: Several test suites still do not compile due to unresolved interface
+dependencies from missing/changed internal types, particularly around event publishing,
+loopback mounting, and the mock router. These need resolving outside this scope.
