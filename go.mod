@@ -15,7 +15,10 @@ require (
 	webtyp.com/view v0.6.72
 )
 
-require webtyp.com/crud v0.0.11
+require (
+	webtyp.com/crud v0.0.11
+	webtyp.com/unixid v0.3.2
+)
 
 require (
 	webtyp.com/calendar v0.1.0 // indirect

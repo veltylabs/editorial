@@ -32,5 +32,7 @@ webtyp.com/storage v0.2.1 h1:t4cv96INbezCh6LuYh5wL6zHyciyMzudD3GExjvX9Xk=
 webtyp.com/storage v0.2.1/go.mod h1:yJ/FUhWqroe+5J9JFlZdAwCOa99SXJ1wS/H/PZw64tU=
 webtyp.com/time v0.6.4 h1:T2c0Dbv3YsgaqX1hFLoZtJuOdMq7UUanqln+hVnQzOk=
 webtyp.com/time v0.6.4/go.mod h1:dTCSLhAwMfO+4UjixTboRsXdjss59S5/8bpB9+lqc0o=
+webtyp.com/unixid v0.3.2 h1:maA22dFE9bxN+MBGDAXeIqiH71lgVGbCXnwRAMpC7pA=
+webtyp.com/unixid v0.3.2/go.mod h1:53p1oHOeypXeoxWUodffi7Mzpdw2tKISdqANtcHFbyM=
 webtyp.com/view v0.6.72 h1:/tYxoR8Ba9QhU3aO2MWQnRjUW7CgAtG6y6zK0X+bCEs=
 webtyp.com/view v0.6.72/go.mod h1:z7QJpnTBTuX7x9B51LdR2jd0bw8Z043gwk5YwiEhnLU=
