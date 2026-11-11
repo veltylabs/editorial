@@ -25,7 +25,7 @@ require (
 	webtyp.com/definitioncheck v0.0.3 // indirect
 	webtyp.com/dom v0.13.29 // indirect
 	webtyp.com/escape v0.1.0 // indirect
-	webtyp.com/filetype v0.1.0 // indirect
+	webtyp.com/filetype v0.1.1 // indirect
 	webtyp.com/json v0.5.40 // indirect
 	webtyp.com/lang v0.1.16 // indirect
 	webtyp.com/msgtype v0.1.0 // indirect
