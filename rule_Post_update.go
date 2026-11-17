@@ -22,12 +22,12 @@ func (next *Post) Update(a crud.CurrentUser, tx crud.Tx, old *Post, fields []str
 		switch targetState {
 		case StateInReview:
 			if currentState != StateDraft {
-				return 0, &model.FieldError{Field: "state", Err: ErrInvalidTransition}
+				return crud.RuleAnswer{}, &model.FieldError{Field: "state", Err: ErrInvalidTransition}
 			}
 		case StateRetired:
 			// "* -> Retired" is allowed
 		default:
-			return 0, &model.FieldError{Field: "state", Err: ErrInvalidTransition}
+			return crud.RuleAnswer{}, &model.FieldError{Field: "state", Err: ErrInvalidTransition}
 		}
 
 		trans := &PostTransition{
@@ -38,8 +38,8 @@ func (next *Post) Update(a crud.CurrentUser, tx crud.Tx, old *Post, fields []str
 			At:        time.NowNano(),
 		}
 		if err := tx.Create(trans); err != nil {
-			return 0, err
+			return crud.RuleAnswer{}, err
 		}
 	}
-	return crud.ApplyAndPublish, nil
+	return crud.ApplyAndPublish(), nil
 }

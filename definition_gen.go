@@ -348,8 +348,8 @@ func (m *Module) MountOperations(reg crud.Registry) {
 		Update: func(a crud.CurrentUser, tx crud.Tx, old, next model.Model, fields []string) (crud.RuleAnswer, error) {
 			return next.(*Post).Update(a, tx, old.(*Post), fields, m)
 		},
-		Search: func(a crud.CurrentUser, filter model.Model, text string) ([]storage.Condition, error) {
-			return (&Post{}).Search(a, filter.(*Post), text, m)
+		Search: func(a crud.CurrentUser, filter model.Model) ([]storage.Condition, error) {
+			return (&Post{}).Search(a, filter.(*Post), m)
 		},
 	})
 	reg.AddStoredEntity(crud.StoredEntity{

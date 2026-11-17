@@ -5,11 +5,8 @@ import (
 	"webtyp.com/storage"
 )
 
-func (p *Post) Search(a crud.CurrentUser, filter *Post, text string, m *Module) ([]storage.Condition, error) {
+func (p *Post) Search(a crud.CurrentUser, filter *Post, m *Module) ([]storage.Condition, error) {
 	var conds []storage.Condition
-	if text != "" {
-        conds = append(conds, storage.Like("title", "%"+text+"%"))
-	}
 	if filter != nil {
 		if filter.State != 0 {
 			conds = append(conds, storage.Eq("state", filter.State))
