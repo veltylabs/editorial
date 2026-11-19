@@ -28,7 +28,7 @@ require (
 	webtyp.com/escape v0.1.0 // indirect
 	webtyp.com/filetype v0.1.1 // indirect
 	webtyp.com/json v0.5.40 // indirect
-	webtyp.com/lang v0.1.16 // indirect
+	webtyp.com/lang v0.1.22 // indirect
 	webtyp.com/msgtype v0.1.2 // indirect
 	webtyp.com/securityevent v0.0.2 // indirect
 )
